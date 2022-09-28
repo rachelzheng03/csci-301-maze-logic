@@ -2,28 +2,39 @@ package generation;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-class MazeFactoryTest {
-	//private variables\
+public class MazeFactoryTest {
 	
+	// private variables
+	private DefaultOrder order; //(4x4)
+	private DefaultOrder order2; //(20x15)
+	private DefaultOrder order3; //(25x25)
+	private MazeFactory factory; 
 	
 	/**
 	 * Initialize MazeBuilder objects before each test. (3 mazes: 4x4, 25x25, 20x15)
 	 */
-	@Before
+	@BeforeEach
 	public void setUp() {
-		
+		order = new DefaultOrder(0); //(4x4)
+		order2 = new DefaultOrder(3); //(20x15)
+		order3 = new DefaultOrder(5); //(25x25)
+		factory=new MazeFactory();
 	}
 	
 	/**
 	 * Tests if setUp created objects. Correct if not null.
 	 */
 	@Test
-	public final void testMazeBuilder() {
-		
+	public final void testMazeFactory() {
+		assertNotNull(factory);
+		assertNotNull(order);
+		assertNotNull(order2);
+		assertNotNull(order3);
 	}
+	
 	/** 
 	 * Tests if a maze only has one exit. The maze is correct if it only has one exit. If no exits or more than 1 exit, test fails. 
 	 */
