@@ -6,12 +6,15 @@ import org.junit.Before;
 import org.junit.jupiter.api.Test;
 
 class MazeFactoryTest {
-	//private variables
+	//private variables\
+	
+	
 	/**
-	 * Initialize MazeBuilder objects before each test. (4 mazes: 4x4, 60x60, 4x60, 60x4)
+	 * Initialize MazeBuilder objects before each test. (3 mazes: 4x4, 25x25, 20x15)
 	 */
 	@Before
 	public void setUp() {
+		
 	}
 	
 	/**
@@ -19,8 +22,8 @@ class MazeFactoryTest {
 	 */
 	@Test
 	public final void testMazeBuilder() {
+		
 	}
-	
 	/** 
 	 * Tests if a maze only has one exit. The maze is correct if it only has one exit. If no exits or more than 1 exit, test fails. 
 	 */
@@ -28,9 +31,8 @@ class MazeFactoryTest {
 	public void testOneExit() {
 		//check every border wall and determine if it is an exit. checks for amount of exits. (maybe private method)
 		//test for smallest possible maze (4x4)
-		//test for small width large height (4x60)
-		//test for large width small height (60x4)
-		//test for larger maze (60x60)
+		//test for not square (20x15)
+		//test for larger maze (25x25)
 		//test for incorrect case: maze with more than 1 exit
 		//test for incorrect case: maze with 0 exits
 	}
@@ -42,9 +44,8 @@ class MazeFactoryTest {
 	public void testEveryCellHasPathToExit(){
 		//check that every cell of mazedists has a value that is not INFINITY
 		//test for smallest possible maze (4x4)
-		//test for small width large height (4x60)
-		//test for large width small height (60x4)
-		//test for larger maze (60x60)
+		//test for not square (20x15)
+		//test for larger maze (25x25)
 		//test incorrect case: maze with no exit
 		//test incorrect case: maze with closed off cell
 	}
@@ -59,9 +60,8 @@ class MazeFactoryTest {
 		//get amount of internal walls in maze
 		//check that amount of internal walls in maze = maximum amount of internal walls-(amount of cells-1)
 		//test for smallest possible maze (4x4)
-		//test for small width large height (4x60)
-		//test for large width small height (60x4)
-		//test for larger maze (60x60)
+		//test for not square (20x15)
+		//test for larger maze (25x25)
 		//test incorrect case: maze with closed off cell
 	}
 	
