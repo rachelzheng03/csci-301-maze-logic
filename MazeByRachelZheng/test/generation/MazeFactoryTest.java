@@ -12,13 +12,13 @@ import junit.extensions.TestSetup;
 public class MazeFactoryTest {
 	
 	// private variables
-	private DefaultOrder order; //(4x4)
-	private DefaultOrder order2; //(12x12)
-	private DefaultOrder order3; // (20x15)
-	private MazeFactory factory;
-	private Maze maze;
-	private Maze maze2;
-	private Maze maze3; 
+	protected DefaultOrder order; //(4x4)
+	protected DefaultOrder order2; //(12x12)
+	protected DefaultOrder order3; // (20x15)
+	protected MazeFactory factory;
+	protected Maze maze;
+	protected Maze maze2;
+	protected Maze maze3; 
 	
 	/**
 	 * Initialize MazeBuilder objects before each test. (3 mazes: 4x4, 12x12 with rooms, 20x15)
