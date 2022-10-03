@@ -308,7 +308,10 @@ public class Control extends JFrame implements KeyListener {
 	    case "Eller":
 	    case "Boruvka":
 	    	// TODO: for P2 assignment, please add code to set the builder accordingly
-	    	throw new RuntimeException("Don't know anybody named " + parameter);
+	    	msg = "Command line input detected: generating random maze with Boruvka's algorithm.";
+	        ((StateTitle)currentState).setBuilder(Order.Builder.Boruvka);
+	        break;
+	    	//throw new RuntimeException("Don't know anybody named " + parameter);
 	    default: // assume this is a filename
 	    	File f = new File(parameter) ;
 	        if (f.exists() && f.canRead())
