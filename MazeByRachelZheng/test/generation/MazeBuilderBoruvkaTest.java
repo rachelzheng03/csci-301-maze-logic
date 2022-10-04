@@ -36,7 +36,18 @@ class MazeBuilderBoruvkaTest extends MazeFactoryTest {
 		factory.waitTillDelivered();
 		maze3 = order3.getMaze();
 	}
-
+	
+	@Override
+	@Test
+	public final void testMazeFactory() {
+		assertNotNull(factory);
+		assertNotNull(order);
+		assertNotNull(order2);
+		assertNotNull(order3);
+		assertNotNull(maze);
+		assertNotNull(maze3);	
+	}
+	
 	@Test
 	public void testGetEdgeWeight() {
 		//maze (4x4)

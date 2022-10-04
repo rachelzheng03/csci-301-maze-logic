@@ -46,7 +46,7 @@ public class MazeFactoryTest {
 	 * Tests if setUp created objects. Correct if not null.
 	 */
 	@Test
-	public final void testMazeFactory() {
+	public void testMazeFactory() {
 		assertNotNull(factory);
 		assertNotNull(order);
 		assertNotNull(order2);
