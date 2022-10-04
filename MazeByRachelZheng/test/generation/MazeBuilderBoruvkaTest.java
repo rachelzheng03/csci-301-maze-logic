@@ -18,17 +18,26 @@ class MazeBuilderBoruvkaTest extends MazeFactoryTest {
 	@BeforeEach
 	public void setUp() {
 		order=new DefaultOrder(0);
+		order.setBuilder(Builder.Boruvka);
 		order2=new DefaultOrder(1);
 		order2.setPerfect(false); 
+		order2.setBuilder(Builder.Boruvka);
 		order3=new DefaultOrder(3);
+		order3.setBuilder(Builder.Boruvka);
 		mbBoruvka=new MazeBuilderBoruvka();
 		mbBoruvka.buildOrder(order);
 		mbBoruvka2=new MazeBuilderBoruvka();
 		mbBoruvka2.buildOrder(order2);
-		
-		//factory=new MazeFactory();
-		//factory.order(order);
-		//factory.waitTillDelivered();
+		factory=new MazeFactory();
+		factory.order(order);
+		factory.waitTillDelivered();
+		maze = order.getMaze();
+//		factory.order(order2);
+//		factory.waitTillDelivered();
+//		maze2 = order2.getMaze();
+//		factory.order(order3);
+//		factory.waitTillDelivered();
+//		maze3 = order3.getMaze();
 	}
 
 	@Test
