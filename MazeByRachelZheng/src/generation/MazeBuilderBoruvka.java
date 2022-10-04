@@ -1,9 +1,7 @@
 package generation;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Random;
-import java.util.Set;
 import java.util.logging.Logger;
 
 public class MazeBuilderBoruvka extends MazeBuilder implements Runnable {
@@ -136,10 +134,19 @@ public class MazeBuilderBoruvka extends MazeBuilder implements Runnable {
 				}
 			}
 		}
+
 		Wallboard minWB=candidates.get(0);
+		for (int i=1; i<candidates.size(); i++) {
+			if (minWB==null) {
+				minWB=candidates.get(i);
+			}
+		}
+		
 		int minEW=getEdgeWeight(minWB.getX(), minWB.getY(), minWB.getDirection());
 		for (int i=0; i<candidates.size(); i++) {
 			Wallboard currentWB = candidates.get(i);
+			if (currentWB==null)
+				continue;
 			if(getEdgeWeight(currentWB.getX(), currentWB.getY(), currentWB.getDirection())<minEW) {
 				minWB=currentWB;
 			}
@@ -150,6 +157,7 @@ public class MazeBuilderBoruvka extends MazeBuilder implements Runnable {
 	private Wallboard getMinEdge(int x, int y) {
 		ArrayList<Wallboard> candidates=new ArrayList<>();
 		updateListOfWallboards(x, y, candidates);
+		if (!candidates.isEmpty()) {
 		Wallboard minWB=candidates.get(0);
 		int minEW=getEdgeWeight(x, y, minWB.getDirection());
 		for (int i=0; i<candidates.size(); i++) {
@@ -160,6 +168,8 @@ public class MazeBuilderBoruvka extends MazeBuilder implements Runnable {
 		}	
 		
 		return minWB;
+		}
+		return null;
 	}
 	
 	/**
