@@ -48,6 +48,15 @@ class MazeBuilderBoruvkaTest extends MazeFactoryTest {
 		assertNotNull(maze3);	
 	}
 	
+	@Override
+	@Test
+	public void testMazeSize() {
+		assertEquals(4, maze.getWidth());
+		assertEquals(4, maze.getHeight());
+		assertEquals(20, maze3.getWidth());
+		assertEquals(15, maze3.getHeight());
+	}
+	
 	@Test
 	public void testGetEdgeWeight() {
 		//maze (4x4)
