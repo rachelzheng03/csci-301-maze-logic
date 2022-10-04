@@ -47,9 +47,10 @@ public class MazeBuilderBoruvka extends MazeBuilder implements Runnable {
 			}
 		}
 		int forestSize=width*height;
-		while(forestSize!=1) {
+		while(!allMerged()) {
 			for (int w=0; w<width; w++) {
 				for (int h=0; h<height; h++) {
+		
 					if (visited[w][h]==1||floorplan.isInRoom(w, h)) {
 						continue;
 					}
@@ -66,22 +67,22 @@ public class MazeBuilderBoruvka extends MazeBuilder implements Runnable {
 					//mark all cells in the set as visited
 					markVisited(newAssignment);
 				}
-				forestSize=getForestSize();
 			}
 		resetVisited();
 		}
 	}
 	
-	private int getForestSize() {
-        HashMap<Integer,Integer> hashmap = new HashMap<Integer,Integer>();
-        for (int w=0; w<width; w++) {
-			for (int h=0; h<height; h++) {  
-            hashmap.put(forest[w][h], w);
-            Set<Integer> sets = hashmap.keySet();
-            return sets.size();
+	private boolean allMerged() {
+		int assignment=forest[0][0];
+		for(int x=0; x<width; x++) {
+			for(int y=0; y<height; y++) {
+				if(forest[x][y]!=assignment) {
+					return false;
+				}
 			}
-        }
-		return (Integer) null;
+		}
+		return true;
+			
 	}
 	
 	private void markVisited(int assignment) {
@@ -105,8 +106,8 @@ public class MazeBuilderBoruvka extends MazeBuilder implements Runnable {
 	private void mergeCells(int oldAssignment, int newAssignment) {
 		for(int x=0; x<width; x++) {
 			for(int y=0; y<height; y++) {
-				if (forest[y][x]==oldAssignment)
-					forest[y][x]=newAssignment;
+				if (forest[x][y]==oldAssignment)
+					forest[x][y]=newAssignment;
 			}
 		}
 	}
@@ -117,12 +118,12 @@ public class MazeBuilderBoruvka extends MazeBuilder implements Runnable {
 		}
 		for (CardinalDirection cd : CardinalDirection.values()) {
 			reusedWallboard.setLocationDirection(x, y, cd);
-			if (floorplan.canTearDown(reusedWallboard)) // 
-			{
+			if (floorplan.hasWall(x, y, cd)&&!floorplan.isPartOfBorder(reusedWallboard)) // 
 				wallboards.add(new Wallboard(x, y, cd));
+			
 			}
 		}
-	}
+	
 	// exclusively used in updateListOfWallboards
 	Wallboard reusedWallboard; // reuse a wallboard in updateListOfWallboards to avoid repeated object instantiation
 
