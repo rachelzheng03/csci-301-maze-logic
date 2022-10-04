@@ -32,12 +32,9 @@ class MazeBuilderBoruvkaTest extends MazeFactoryTest {
 		factory.order(order);
 		factory.waitTillDelivered();
 		maze = order.getMaze();
-//		factory.order(order2);
-//		factory.waitTillDelivered();
-//		maze2 = order2.getMaze();
-//		factory.order(order3);
-//		factory.waitTillDelivered();
-//		maze3 = order3.getMaze();
+		factory.order(order3);
+		factory.waitTillDelivered();
+		maze3 = order3.getMaze();
 	}
 
 	@Test
