@@ -1,11 +1,10 @@
 package generation;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Random;
+import java.util.Set;
 import java.util.logging.Logger;
-
-import javax.swing.text.ChangedCharSetException;
-import javax.swing.text.Position;
 
 public class MazeBuilderBoruvka extends MazeBuilder implements Runnable {
 	
@@ -19,114 +18,13 @@ public class MazeBuilderBoruvka extends MazeBuilder implements Runnable {
 	private int[][] edgeWeightsSouth; //contains the edge weight for wallboards to the south of each cell
 	private int[][] edgeWeightsWest; //contains the edge weight for wallboards to the west of each cell
 	private ArrayList<Integer> weightList;
-	private MST[][] forest;
-
+	private int[][] forest;
+	private int[][] visited;
 	
 	public MazeBuilderBoruvka() {
 		super();
 		LOGGER.config("Using Boruvka's algorithm to generate maze.");
 	}
-	
-	private class MST{
-		private boolean visited; //to be visited means the MST is part of a set with other MSTs
-		private ArrayList<Wallboard> edges; //all wallboards that can be broken that borders the cells of the set
-		private ArrayList<int[]> vertices; //list of cells {width, height} in set
-		private boolean newest; //true if newest MST added to a set (representative for the set)
-		int[] start_cell;
-		
-		/**
-		 * Initialize the MST with the cell indicated by the parameters.
-		 */	
-		public MST(int x, int y) {
-			edges = new ArrayList<>();
-			vertices=new ArrayList<>();
-			visited=false;
-			newest=true;
-			start_cell = new int[2];
-			start_cell[0]=x;
-			start_cell[1]=y;
-			addVertexToMST(start_cell);
-			updateListOfWallboards(x, y, edges);
-			
-		}
-		
-		public int getX() {
-			return start_cell[0];
-		}
-		
-		public int getY() {
-			return start_cell[1];
-		}
-		
-		/**
-		 * @return returns a array list of edges that are in the MST
-		 */
-		public ArrayList<Wallboard> getEdges() {
-			return edges;
-		}
-		
-		public void setEdges(ArrayList<Wallboard> edges) {
-			this.edges=edges;
-		}
-		
-		public void setVisited(boolean b) {
-			visited=b;
-		}
-		
-		public boolean getVisited(){
-			return visited;
-		}
-		
-		public boolean getNewest() {
-			return newest;
-		}
-
-		public void setNewest(boolean newest) {
-			this.newest = newest;
-		}
-		
-		public ArrayList<int[]> getVertices() {
-			return vertices;
-		}
-		
-		public void setVertices(ArrayList<int[]> newVertices) {
-			this.vertices=newVertices;
-		}
-		
-		public void addVertexToMST(int[] cell) {
-			vertices.add(cell);
-		}
-		
-		public void addEdgeToMST(Wallboard wb) {
-			edges.add(wb);
-		}
-		
-		/**
-		 * Updates a list of all wallboards that could be removed from the maze based on wallboards towards new cells.
-		 * For the given x, y coordinates, one checks all four directions
-		 * and for the ones where one can tear down a wallboard, a 
-		 * corresponding wallboard is added to the list of wallboards.
-		 * @param x the x coordinate of interest
-		 * @param y the y coordinate of interest
-		 * @param wallboards the new elements should be added to, must not be null
-		 */
-		//only for breaking into new frontier
-		public void updateListOfWallboards(int x, int y, ArrayList<Wallboard> wallboards) {
-			if (reusedWallboard == null) {
-				reusedWallboard = new Wallboard(x, y, CardinalDirection.East) ;
-			}
-			for (CardinalDirection cd : CardinalDirection.values()) {
-				reusedWallboard.setLocationDirection(x, y, cd);
-				if (floorplan.canTearDown(reusedWallboard)) // 
-				{
-					wallboards.add(new Wallboard(x, y, cd));
-				}
-			}
-		}
-	
-		// exclusively used in updateListOfWallboards
-		Wallboard reusedWallboard; // reuse a wallboard in updateListOfWallboards to avoid repeated object instantiation
-}
 	
 	/**
 	 * This method generates pathways into the maze by using Boruvka's algorithm.
@@ -137,152 +35,130 @@ public class MazeBuilderBoruvka extends MazeBuilder implements Runnable {
 	protected void generatePathways() {
 		// TODO Auto-generated method stub
 		setAllEdgeWeights();
+		visited=new int[width][height]; //marks 1 if the cell at position (width, height) has been visited in that cycle. otherwise 0.
+		forest=new int[width][height];
 		
-		//starting with all cells being their own "forest" and empty set of edges
-		forest=new MST[width][height];
-		//initialize MSTs for each cells
-		for (int i=0; i<width; i++) {
-			for (int j=0; j<height; j++) {
-				if(!floorplan.isInRoom(i, j)) {
-					MST tree = new MST(i, j);
-					forest[i][j]=tree;
-				}
-			}
-		}
-		int forestSize=height*width;
-		
-		
-		//while not one big forest (MST that contains all the cells)
-		//while (forestSize!=1) {
-		int i = 0;
-		while(i<1) {
-		//for each tree in forest:
-			for (int w=0; w<width; w++) {
-				for (int h=0; h<height; h++) {
-					MST tree = forest[0][0];
-					//if cell is in room or cell has been connected to another set, skip
-					if (tree.getVisited()||floorplan.isInRoom(w, h)||!tree.getNewest()) 
-						continue;
-					ArrayList<Wallboard> candidates = tree.getEdges(); //wallboard candidates of given tree
-					if (!candidates.isEmpty()) {
-						//get cheapest wallboard of all cells and break it down
-						Wallboard curWallboard = getMinEdge(candidates);
-						floorplan.deleteWallboard(curWallboard);
-						
-						//merge trees (add connected cells and edges to same set)
-						MST neighborTree = forest[curWallboard.getNeighborX()][curWallboard.getNeighborY()];
-						ArrayList<int[]> verticesMe = tree.getVertices();
-						MST mergeWith = findNewest(neighborTree);
-//						ArrayList<Wallboard> mergeWithEdges = mergeWith.getEdges();
-//						ArrayList<int[]> mergeWithVertex = mergeWith.getVertices();
-						if (neighborTree.getVisited()) {
-							//update vertices and edges for all cells in set
-							for (int e=0; e<mergeWith.getEdges().size(); e++) {
-								tree.addEdgeToMST(mergeWith.getEdges().get(e));
-							}
-							for (int v=0; v<mergeWith.getVertices().size(); v++) {
-								tree.addVertexToMST(mergeWith.getVertices().get(v));
-							}
-							for (int v=0; v<verticesMe.size(); v++) {
-								if(verticesMe.get(v)[0]!=w&&verticesMe.get(v)[1]!=h) {
-								MST update=forest[verticesMe.get(v)[0]][verticesMe.get(v)[1]];
-								update.setVertices(tree.getVertices());
-								update.setEdges(null);
-								}
-							}
-							mergeWith.setNewest(false);
-							tree.setNewest(true);
-						}
-						
-						else { //new frontier or the "neighbor"
-							for (int e=0; e<candidates.size(); e++) {
-								mergeWith.addEdgeToMST(candidates.get(e));
-							}
-							for (int v=0; v<verticesMe.size(); v++) {
-								mergeWith.addVertexToMST(verticesMe.get(v));
-							}
-							for (int v=0; v<mergeWith.getVertices().size(); v++) {
-								if(mergeWith.getVertices().get(v)[0]==mergeWith.getX()&&mergeWith.getVertices().get(v)[1]==mergeWith.getY()) {
-								MST update=forest[mergeWith.getVertices().get(v)[0]][mergeWith.getVertices().get(v)[1]];
-								update.setVertices(mergeWith.getVertices());
-								update.setEdges(null);
-								}
-							}
-							tree.setNewest(false);
-							mergeWith.setNewest(true);
-						}
-						tree.setVisited(true);
-						neighborTree.setVisited(true);
-						forestSize--;
-					}
-		
-				}
-		
-			}
-			resetVisit();
-			i++;
-		}
-		}
-	//}
-	//}
-	
-
-	private MST findNewest(MST tree){
-		for (int v=0; v<tree.getVertices().size(); v++) {
-			int[] cell = tree.getVertices().get(v);
-			MST tempNewest=forest[cell[0]][cell[1]];
-			if (tempNewest.getNewest()) {
-				return tempNewest;
-			}
-		}
-		return null;
-	}
-	
-	public void resetVisit() {
+		//assign each cell a number (to show they belong in different sets)
+		int initialAssignment=1;
 		for (int w=0; w<width; w++) {
 			for (int h=0; h<height; h++) {
-				forest[h][w].setVisited(false);
+				forest[w][h]=initialAssignment;
+				initialAssignment++;
+			}
+		}
+		int forestSize=width*height;
+		while(forestSize!=1) {
+			for (int w=0; w<width; w++) {
+				for (int h=0; h<height; h++) {
+					if (visited[w][h]==1||floorplan.isInRoom(w, h)) {
+						continue;
+					}
+					int newAssignment=forest[w][h]; //set marker
+				
+					//get smallest edge weight of set and delete
+					Wallboard currWallboard=getMinEdge(newAssignment);
+					floorplan.deleteWallboard(currWallboard);
+				
+					//merge by assigning neighbor to same number
+					int oldAssignment=forest[currWallboard.getNeighborX()][currWallboard.getNeighborY()];
+					mergeCells(oldAssignment, newAssignment);
+				
+					//mark all cells in the set as visited
+					markVisited(newAssignment);
+				}
+				forestSize=getForestSize();
+			}
+		resetVisited();
+		}
+	}
+	
+	private int getForestSize() {
+        HashMap<Integer,Integer> hashmap = new HashMap<Integer,Integer>();
+        for (int w=0; w<width; w++) {
+			for (int h=0; h<height; h++) {  
+            hashmap.put(forest[w][h], w);
+            Set<Integer> sets = hashmap.keySet();
+            return sets.size();
+			}
+        }
+		return (Integer) null;
+	}
+	
+	private void markVisited(int assignment) {
+		for(int x=0; x<width; x++) {
+			for(int y=0; y<height; y++) {
+				if (forest[x][y]==assignment) {
+					visited[x][y]=1;
+				}
+			}			
+		}
+	}
+	
+	private void resetVisited() {
+		for(int x=0; x<width; x++) {
+			for(int y=0; y<height; y++) {
+				visited[x][y]=0;
 			}
 		}
 	}
-			
-	/**
-	 * Gets the wallboard with the minimum edge weight given a list of edge weights
-	 * @param x
-	 * @param y
-	 * @return valid wallboard (has not been broken down and is not a border) with minimum edge weight
-	 */
-	private Wallboard getMinEdge(ArrayList<Wallboard> candidates) {		
-		Wallboard currentMin=candidates.get(0);
-		int currentMinIdx=0;
-		for (int i=0; i<candidates.size(); i++) {
-			Wallboard compare=candidates.get(i);
-			int currentMinEW=getEdgeWeight(currentMin.getX(), currentMin.getY(), currentMin.getDirection());
-			int compareEW=getEdgeWeight(compare.getX(),compare.getY(),compare.getDirection());
-			if (compareEW<currentMinEW) {
-				currentMin=compare;
-				currentMinIdx=i;
+	
+	private void mergeCells(int oldAssignment, int newAssignment) {
+		for(int x=0; x<width; x++) {
+			for(int y=0; y<height; y++) {
+				if (forest[y][x]==oldAssignment)
+					forest[y][x]=newAssignment;
 			}
 		}
-		assert(candidates.get(currentMinIdx).getX()==currentMin.getX());
-		assert(candidates.get(currentMinIdx).getY()==currentMin.getY());
-		assert(candidates.get(currentMinIdx).getDirection()==currentMin.getDirection());
+	}
+	
+	private void updateListOfWallboards(int x, int y, ArrayList<Wallboard> wallboards) {
+		if (reusedWallboard == null) {
+			reusedWallboard = new Wallboard(x, y, CardinalDirection.East) ;
+		}
+		for (CardinalDirection cd : CardinalDirection.values()) {
+			reusedWallboard.setLocationDirection(x, y, cd);
+			if (floorplan.canTearDown(reusedWallboard)) // 
+			{
+				wallboards.add(new Wallboard(x, y, cd));
+			}
+		}
+	}
+	// exclusively used in updateListOfWallboards
+	Wallboard reusedWallboard; // reuse a wallboard in updateListOfWallboards to avoid repeated object instantiation
+
+	private Wallboard getMinEdge(int marker) {
+		ArrayList<Wallboard> candidates=new ArrayList<>();
+		for (int w=0; w<width; w++) {
+			for (int h=0; h<height; h++) {
+				if (forest[w][h]==marker) {
+					candidates.add(getMinEdge(w, h)); //min edge weight of each cell in set becomes a candidate
+				}
+			}
+		}
+		Wallboard minWB=candidates.get(0);
+		int minEW=getEdgeWeight(minWB.getX(), minWB.getY(), minWB.getDirection());
+		for (int i=0; i<candidates.size(); i++) {
+			Wallboard currentWB = candidates.get(i);
+			if(getEdgeWeight(currentWB.getX(), currentWB.getY(), currentWB.getDirection())<minEW) {
+				minWB=currentWB;
+			}
+		}	
+		return minWB;
+	}
+	
+	private Wallboard getMinEdge(int x, int y) {
+		ArrayList<Wallboard> candidates=new ArrayList<>();
+		updateListOfWallboards(x, y, candidates);
+		Wallboard minWB=candidates.get(0);
+		int minEW=getEdgeWeight(x, y, minWB.getDirection());
+		for (int i=0; i<candidates.size(); i++) {
+			Wallboard currentWB = candidates.get(i);
+			if(getEdgeWeight(x, y, currentWB.getDirection())<minEW) {
+				minWB=currentWB;
+			}
+		}	
 		
-		return candidates.remove(currentMinIdx);
-			
-//		//get the wallboard with the smallest edge weight out of valid candidates
-//		Wallboard currentMin=minCandidates.get(0);
-//		for (int n=0; n<minCandidates.size(); n++) {
-//			Wallboard compare=minCandidates.get(n);
-//			int currentMinEW=getEdgeWeight(currentMin.getX(), currentMin.getY(), currentMin.getDirection());
-//			int compareEW=getEdgeWeight(compare.getX(),compare.getY(),compare.getDirection());
-//			if (compareEW<currentMinEW) {
-//				currentMin=compare;
-//			}
-//		
-//
-//		}
-//		return currentMin;
+		return minWB;
 	}
 	
 	/**
@@ -295,10 +171,10 @@ public class MazeBuilderBoruvka extends MazeBuilder implements Runnable {
 		int weight;
 		//set random seed 
 		SingleRandom.setSeed(seed);
-		edgeWeightsEast = new int[height][width];
-		edgeWeightsSouth = new int[height][width];
-		edgeWeightsNorth = new int[height][width];
-		edgeWeightsWest = new int[height][width];
+		edgeWeightsEast = new int[width][height];
+		edgeWeightsSouth = new int[width][height];
+		edgeWeightsNorth = new int[width][height];
+		edgeWeightsWest = new int[width][height];
 		weightList=new ArrayList<>();
 		weightList.add(0); //add 0 to weightList so that 0 cannot be a edge weight for any wallboard
 		
@@ -315,25 +191,25 @@ public class MazeBuilderBoruvka extends MazeBuilder implements Runnable {
 				//populate edgeWeightEast 
 				weight=getUniqueWeight();
 				if (!floorplan.isPartOfBorder(wbEast)&&!floorplan.isInRoom(i, j)) {
-					edgeWeightsEast[j][i]=weight;
+					edgeWeightsEast[i][j]=weight;
 					weightList.add(weight); 
 				}
 				
 				//populate edgeWeightSouth
 				weight=getUniqueWeight();
 				if (!floorplan.isPartOfBorder(wbSouth)&&!floorplan.isInRoom(i, j)) {
-					edgeWeightsSouth[j][i]=weight;
+					edgeWeightsSouth[i][j]=weight;
 					weightList.add(weight);
 				}
 				
 				//populate edgeWeightWest
 				if (!floorplan.isPartOfBorder(wbWest)&&!floorplan.isInRoom(i, j)){
-					edgeWeightsWest[j][i]=edgeWeightsEast[j][i-1];
+					edgeWeightsWest[i][j]=edgeWeightsEast[i-1][j];
 				}
 				
 				//populate edgeWeightNorth
 				if (!floorplan.isPartOfBorder(wbNorth)&&!floorplan.isInRoom(i, j)) {
-					edgeWeightsNorth[j][i]=edgeWeightsSouth[j-1][i];
+					edgeWeightsNorth[i][j]=edgeWeightsSouth[i][j-1];
 				}			
 			}
 		}
@@ -344,9 +220,9 @@ public class MazeBuilderBoruvka extends MazeBuilder implements Runnable {
 	 * @return a integer that has not been used as an edge weight
 	 */
 	private int getUniqueWeight() {
-		int weight = random.nextInt();
+		int weight = random.nextIntWithinInterval(1, 50000000);
 		while (weightList.contains(weight)) {
-			weight=random.nextInt();
+			weight=random.nextIntWithinInterval(1, 50000000);
 		}
 		return weight;
 	}
@@ -364,13 +240,13 @@ public class MazeBuilderBoruvka extends MazeBuilder implements Runnable {
 			//return edge weight for wallboard by indexing 2D array
 			switch(cd) {
 			case East:
-				return edgeWeightsEast[y][x];
+				return edgeWeightsEast[x][y];
 			case South:
-				return edgeWeightsSouth[y][x];
+				return edgeWeightsSouth[x][y];
 			case West:
-				return edgeWeightsWest[y][x];
+				return edgeWeightsWest[x][y];
 			case North:
-				return edgeWeightsNorth[y][x];
+				return edgeWeightsNorth[x][y];
 			default:
 				LOGGER.warning("Missing cardinal direction in parameters");
 				return 0;
