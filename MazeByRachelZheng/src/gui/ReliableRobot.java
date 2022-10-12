@@ -6,6 +6,14 @@ package gui;
 import generation.CardinalDirection;
 
 /**
+ * Responsibilities:
+ * 1)Rotate, move, jump
+ * 2)Calculate energy used and energy leftover (battery)
+ * 3)Calculate distance traveled
+ * 4)Get Location (exact position, in room, is exit)
+ * 5)Account for failure and repairs
+ * 
+ * Collaborators: ReliableSensor, Control, StatePlaying
  * @author Rachel Zheng
  *
  */

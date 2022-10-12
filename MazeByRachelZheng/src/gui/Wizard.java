@@ -6,6 +6,9 @@ package gui;
 import generation.Maze;
 
 /**
+ * Responsibilities: getting out of the maze as quickly as possible
+ *  
+ * Collaborators: ReliableRobot, Maze
  * @author Rachel Zheng
  *
  */

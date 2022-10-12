@@ -10,12 +10,9 @@ import gui.Robot.Direction;
 /**
  * Responsibilities: 
  * 1)Calculate distance to a wallboard based on direction of sensor. 
- * 2)Set sensor direction
- * 3)Set maze
- * 4)Calculate energy used to get distance
- * 5)Accounts for the failure and repair of sensor
+ * 2)Calculate energy used to get distance
  * 
- * Collaborators: RobotDriver, CardinalDirection, Maze
+ * Collaborators: CardinalDirection, Maze
  * @author Rachel Zheng
  *
  */

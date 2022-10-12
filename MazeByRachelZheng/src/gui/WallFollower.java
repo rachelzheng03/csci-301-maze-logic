@@ -6,6 +6,9 @@ package gui;
 import generation.Maze;
 
 /**
+ * Responsibilities: getting out of the maze using the wall-following algorithm
+
+ * Collaborators: RobotDriver, Maze
  * @author Rachel Zheng
  *
  */
