@@ -26,6 +26,7 @@ public class ReliableRobot implements Robot {
 	private int odomemeter; //distance traveled
 	
 	public void ReliableRobot() {
+		
 	}
 
 	@Override
