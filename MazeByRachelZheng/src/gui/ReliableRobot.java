@@ -18,6 +18,15 @@ import generation.CardinalDirection;
  *
  */
 public class ReliableRobot implements Robot {
+	
+	private Control controller;
+	private float batteryLevel;
+	private final static float ENERGY_FOR_FULL_ROTATION=12;
+	private final static float ENERGY_FOR_STEP_FORWARD=12;
+	private int odomemeter; //distance traveled
+	
+	public void ReliableRobot() {
+	}
 
 	@Override
 	public void setController(Control controller) {
@@ -28,6 +37,8 @@ public class ReliableRobot implements Robot {
 	@Override
 	public void addDistanceSensor(DistanceSensor sensor, Direction mountedDirection) {
 		// TODO Auto-generated method stub
+		//initialize reliable sensor
+		//set sensor's mounted direction
 
 	}
 
@@ -58,12 +69,14 @@ public class ReliableRobot implements Robot {
 	@Override
 	public float getEnergyForFullRotation() {
 		// TODO Auto-generated method stub
+		//should be 12 for a full rotation
 		return 0;
 	}
 
 	@Override
 	public float getEnergyForStepForward() {
 		// TODO Auto-generated method stub
+		//should be 6
 		return 0;
 	}
 
@@ -82,19 +95,27 @@ public class ReliableRobot implements Robot {
 	@Override
 	public void rotate(Turn turn) {
 		// TODO Auto-generated method stub
+		//check if energy is sufficient
+		//turn in direction indicated by parameter
+		//subtract 3 from batteryLevel
 
 	}
 
 	@Override
 	public void move(int distance) {
 		// TODO Auto-generated method stub
+		//check if energy is sufficient and no wall
+		//move "distance" steps in the direction of the robot
+		//subtract 6 from batteryLevel
 
 	}
 
 	@Override
 	public void jump() {
 		// TODO Auto-generated method stub
-
+		//check that energy is sufficient and not facing exterior wall
+		//jump over 1 in the direction the robot is facing
+		//subtract 40 from batteryLevel
 	}
 
 	@Override
@@ -124,6 +145,8 @@ public class ReliableRobot implements Robot {
 	@Override
 	public boolean canSeeThroughTheExitIntoEternity(Direction direction) throws UnsupportedOperationException {
 		// TODO Auto-generated method stub
+		//check direction robot is facing and location of robot
+		//return infinity if facing exit
 		return false;
 	}
 
