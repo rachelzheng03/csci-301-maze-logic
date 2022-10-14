@@ -24,6 +24,7 @@ public class ReliableSensor implements DistanceSensor {
 	private Direction mountedDirection; //direction of sensor relative to the robot
 	private float battery; //
 	
+	//constructor
 	public void ReliableSensor() {
 	}
 	

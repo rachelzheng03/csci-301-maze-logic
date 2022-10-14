@@ -23,8 +23,9 @@ public class ReliableRobot implements Robot {
 	private float batteryLevel;
 	private final static float ENERGY_FOR_FULL_ROTATION=12;
 	private final static float ENERGY_FOR_STEP_FORWARD=12;
-	private int odomemeter; //distance traveled
+	private int odometer; //distance traveled
 	
+	//constructor 
 	public void ReliableRobot() {
 		
 	}
@@ -46,6 +47,7 @@ public class ReliableRobot implements Robot {
 	@Override
 	public int[] getCurrentPosition() throws Exception {
 		// TODO Auto-generated method stub
+		//if position out of maze throw exception
 		return null;
 	}
 
