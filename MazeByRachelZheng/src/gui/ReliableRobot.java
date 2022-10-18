@@ -3,6 +3,8 @@
  */
 package gui;
 
+import static org.junit.jupiter.api.Assertions.assertAll;
+
 import generation.CardinalDirection;
 import generation.Maze;
 import gui.Constants.UserInput;
@@ -55,6 +57,8 @@ public class ReliableRobot implements Robot {
 	public void addDistanceSensor(DistanceSensor sensor, Direction mountedDirection) {
 		// TODO Auto-generated method stub
 		//set sensor's mounted direction
+		sensor=new ReliableSensor();
+		assert(sensor!=null);
 		sensor.setSensorDirection(mountedDirection);
 	}
 
@@ -248,8 +252,8 @@ public class ReliableRobot implements Robot {
 			return;
 		}
 		controller.handleKeyboardInput(UserInput.JUMP, 0);
-		//check that energy is sufficient and not facing exterior wall
-		//jump over 1 in the direction the robot is facing
+		//increase odometer (number of 1 cell steps) by 1
+		odometer+=1;
 	}
 
 	@Override

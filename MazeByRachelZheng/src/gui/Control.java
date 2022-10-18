@@ -312,6 +312,12 @@ public class Control extends JFrame implements KeyListener {
 	        ((StateTitle)currentState).setBuilder(Order.Builder.Boruvka);
 	        break;
 	    	//throw new RuntimeException("Don't know anybody named " + parameter);
+	    case "Wizard":
+	    	Robot robot = new ReliableRobot();
+	    	RobotDriver driver = new Wizard();
+	    	setRobotAndDriver(robot, driver);
+	    	msg = "Command line input detected: robot driver set to Wizard object";
+	        break;
 	    default: // assume this is a filename
 	    	File f = new File(parameter) ;
 	        if (f.exists() && f.canRead())

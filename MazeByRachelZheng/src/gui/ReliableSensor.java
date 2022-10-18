@@ -179,7 +179,7 @@ public class ReliableSensor implements DistanceSensor {
 			if (floorplan.hasWall(currentPosition[0], h, CardinalDirection.North))
 				break;
 			//if robot facing exit return Integer.MAX_VALUE
-			if (floorplan.isExitPosition(currentPosition[0], h)&&floorplan.isPartOfBorder(new Wallboard(currentPosition[0], h, CardinalDirection.North)))
+			if (floorplan.isExitPosition(currentPosition[0], h)&&!floorplan.isPartOfBorder(new Wallboard(currentPosition[0], h, CardinalDirection.North)))
 				return Integer.MAX_VALUE;
 			if (floorplan.hasNoWall(currentPosition[0], h, CardinalDirection.North))
 				step++;
@@ -199,7 +199,7 @@ public class ReliableSensor implements DistanceSensor {
 			if (floorplan.hasWall(w, currentPosition[1], CardinalDirection.East))
 				break;
 			//if robot facing exit return Integer.MAX_VALUE
-			if (floorplan.isExitPosition(w, currentPosition[1])&&floorplan.isPartOfBorder(new Wallboard(w, currentPosition[1], CardinalDirection.East)))
+			if (floorplan.isExitPosition(w, currentPosition[1])&&!floorplan.isPartOfBorder(new Wallboard(w, currentPosition[1], CardinalDirection.East)))
 				return Integer.MAX_VALUE;
 			if (floorplan.hasNoWall(w, currentPosition[1], CardinalDirection.East))
 				step++;
@@ -219,7 +219,7 @@ public class ReliableSensor implements DistanceSensor {
 			if (floorplan.hasWall(currentPosition[0], h, CardinalDirection.South))
 				break;
 			//if robot facing exit return Integer.MAX_VALUE
-			if (floorplan.isExitPosition(currentPosition[0], h)&&floorplan.isPartOfBorder(new Wallboard(currentPosition[0], h, CardinalDirection.South)))
+			if (floorplan.isExitPosition(currentPosition[0], h)&&!floorplan.isPartOfBorder(new Wallboard(currentPosition[0], h, CardinalDirection.South)))
 				return Integer.MAX_VALUE;
 			if (floorplan.hasNoWall(currentPosition[0], h, CardinalDirection.South))
 				step++;
@@ -239,7 +239,7 @@ public class ReliableSensor implements DistanceSensor {
 			if (floorplan.hasWall(w, currentPosition[1], CardinalDirection.West))
 				break;
 			//if robot facing exit return Integer.MAX_VALUE
-			if (floorplan.isExitPosition(w, currentPosition[1])&&floorplan.isPartOfBorder(new Wallboard(w, currentPosition[1], CardinalDirection.West)))
+			if (floorplan.isExitPosition(w, currentPosition[1])&&!floorplan.isPartOfBorder(new Wallboard(w, currentPosition[1], CardinalDirection.West)))
 				return Integer.MAX_VALUE;
 			if (floorplan.hasNoWall(w, currentPosition[1], CardinalDirection.West))
 				step++;

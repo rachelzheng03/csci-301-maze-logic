@@ -3,13 +3,9 @@
  */
 package gui;
 
-import static org.junit.jupiter.api.Assertions.assertAll;
-
 import javax.swing.plaf.basic.BasicInternalFrameTitlePane.MoveAction;
 
 import org.hamcrest.core.IsInstanceOf;
-import org.junit.Before;
-
 import generation.CardinalDirection;
 import generation.Maze;
 import gui.Robot.Direction;
