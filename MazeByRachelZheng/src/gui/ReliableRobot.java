@@ -192,6 +192,8 @@ public class ReliableRobot implements Robot {
 			//move 1 step in the forward direction
 			else
 				controller.handleKeyboardInput(UserInput.UP, 0);
+				//increase odometer (number of 1 cell steps) by 1
+				odometer+=1;
 		}
 	}
 
@@ -254,7 +256,7 @@ public class ReliableRobot implements Robot {
 		// TODO Auto-generated method stub
 		try {
 			int[] position = getCurrentPosition();
-			return controller.getMaze().getFloorplan().isExitPosition(position[0], position[1]);
+			return position==controller.getMaze().getExitPosition();
 		} catch (Exception e) { //if current position is out of maze
 			// TODO Auto-generated catch block
 			e.printStackTrace();
