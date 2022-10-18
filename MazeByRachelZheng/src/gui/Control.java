@@ -334,7 +334,7 @@ public class Control extends JFrame implements KeyListener {
      * @param userInput is the user input 
      * @param value is only used for the numerical input for the size of the maze
      */
-	private void handleKeyboardInput(UserInput userInput, int value) {
+	protected void handleKeyboardInput(UserInput userInput, int value) {
 		currentState.handleUserInput(userInput, value);
 		repaint();
 	}

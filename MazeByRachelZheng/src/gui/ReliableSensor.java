@@ -3,6 +3,7 @@
  */
 package gui;
 
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import javax.swing.plaf.basic.BasicInternalFrameTitlePane.IconifyAction;
@@ -34,7 +35,9 @@ public class ReliableSensor implements DistanceSensor {
 	private float battery; //
 	
 	//constructor
-	public void ReliableSensor() {
+	public ReliableSensor() {
+		maze=null;
+		mountedDirection=null;
 	}
 	
 	@Override
