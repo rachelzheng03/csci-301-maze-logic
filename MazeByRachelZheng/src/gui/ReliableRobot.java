@@ -41,6 +41,7 @@ public class ReliableRobot implements Robot {
 		hasStopped=false;
 		controller=null;
 		odometer=0;
+		batteryLevel=3500;
 	}
 
 	@Override
