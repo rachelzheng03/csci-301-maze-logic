@@ -3,8 +3,6 @@
  */
 package gui;
 
-import static org.junit.jupiter.api.Assertions.assertAll;
-
 import generation.CardinalDirection;
 import generation.Maze;
 import gui.Constants.UserInput;
@@ -28,14 +26,18 @@ public class ReliableRobot implements Robot {
 	private final static float ENERGY_FOR_FULL_ROTATION=12;
 	private final static float ENERGY_FOR_STEP_FORWARD=12;
 	private int odometer; //distance traveled
-	private ReliableSensor forwardSensor;
-	private ReliableSensor backwardSensor;
-	private ReliableSensor leftSensor;
-	private ReliableSensor rightSensor;
+	protected ReliableSensor forwardSensor;
+	protected ReliableSensor backwardSensor;
+	protected ReliableSensor leftSensor;
+	protected ReliableSensor rightSensor;
 	private boolean hasStopped;
 	
 	//constructor 
 	public ReliableRobot() {
+		forwardSensor=new ReliableSensor();
+		backwardSensor=new ReliableSensor();
+		leftSensor=new ReliableSensor();
+		rightSensor=new ReliableSensor();
 		addDistanceSensor(forwardSensor, Direction.FORWARD);
 		addDistanceSensor(backwardSensor, Direction.BACKWARD);
 		addDistanceSensor(leftSensor, Direction.LEFT);
@@ -57,8 +59,8 @@ public class ReliableRobot implements Robot {
 	public void addDistanceSensor(DistanceSensor sensor, Direction mountedDirection) {
 		// TODO Auto-generated method stub
 		//set sensor's mounted direction
-		sensor=new ReliableSensor();
-		assert(sensor!=null);
+		//sensor=new ReliableSensor();
+		//assert(sensor!=null);
 		sensor.setSensorDirection(mountedDirection);
 	}
 
@@ -69,7 +71,7 @@ public class ReliableRobot implements Robot {
 		int[] position = controller.getCurrentPosition();
 		assert(position!=null);
 		assert(controller.getMaze()!=null);
-		if (controller.getMaze().isValidPosition(position[0], position[1])) {
+		if (!controller.getMaze().isValidPosition(position[0], position[1])) {
 			throw new Exception("position is out of maze");
 		}
 		return position;
@@ -143,18 +145,18 @@ public class ReliableRobot implements Robot {
 		
 		//turn in direction indicated by parameter
 		else if (turn==Turn.LEFT) {
-			controller.handleKeyboardInput(UserInput.LEFT, 0);
+			controller.currentState.handleUserInput(UserInput.LEFT, 0);
 		}
 		else if (turn==Turn.RIGHT) {
-			controller.handleKeyboardInput(UserInput.RIGHT, 0);
+			controller.currentState.handleUserInput(UserInput.RIGHT, 0);
 		}
 		else if (turn==Turn.AROUND) {
-			controller.handleKeyboardInput(UserInput.RIGHT, 0);
+			controller.currentState.handleUserInput(UserInput.RIGHT, 0);
 			batteryLevel=batteryLevel-3;
 			if (batteryLevel<=0) 
 				hasStopped=true;
 			else {
-				controller.handleKeyboardInput(UserInput.RIGHT, 0);
+				controller.currentState.handleUserInput(UserInput.RIGHT, 0);
 			}
 		}
 	}
@@ -196,7 +198,7 @@ public class ReliableRobot implements Robot {
 			}
 			//move 1 step in the forward direction
 			else
-				controller.handleKeyboardInput(UserInput.UP, 0);
+				controller.currentState.handleUserInput(UserInput.UP, 0);
 				//increase odometer (number of 1 cell steps) by 1
 				odometer+=1;
 		}
@@ -251,7 +253,7 @@ public class ReliableRobot implements Robot {
 			hasStopped=true;
 			return;
 		}
-		controller.handleKeyboardInput(UserInput.JUMP, 0);
+		controller.currentState.handleUserInput(UserInput.JUMP, 0);
 		//increase odometer (number of 1 cell steps) by 1
 		odometer+=1;
 	}
@@ -261,7 +263,9 @@ public class ReliableRobot implements Robot {
 		// TODO Auto-generated method stub
 		try {
 			int[] position = getCurrentPosition();
-			return position==controller.getMaze().getExitPosition();
+			int x = position[0];
+			int y = position[1];
+			return x==controller.getMaze().getExitPosition()[0]&&y==controller.getMaze().getExitPosition()[1];
 		} catch (Exception e) { //if current position is out of maze
 			// TODO Auto-generated catch block
 			e.printStackTrace();

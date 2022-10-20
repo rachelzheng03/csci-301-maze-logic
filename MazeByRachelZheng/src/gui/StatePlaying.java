@@ -1,12 +1,12 @@
 package gui;
 
 import gui.Constants.UserInput;
-
 import java.util.logging.Logger;
 
 import generation.CardinalDirection;
 import generation.Floorplan;
 import generation.Maze;
+import gui.Robot;
 
 
 /**
@@ -179,7 +179,26 @@ public class StatePlaying implements State {
         	// else: dry-run without graphics, most likely for testing purposes
         	printWarning();
         }
+        if (control.getRobot()!=null&&control.getDriver()!=null) {
+        	ReliableRobot robot = (ReliableRobot) control.getRobot();
+        	robot.setController(control);
+        	robot.forwardSensor.setMaze(maze);
+        	robot.backwardSensor.setMaze(maze);
+        	robot.leftSensor.setMaze(maze);
+        	robot.rightSensor.setMaze(maze);
+        	RobotDriver wizard = control.getDriver();
+        	wizard.setRobot(control.getRobot());
+        	wizard.setMaze(maze);
+        	try {
+				wizard.drive2Exit();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				switchFromPlayingToWinning(0);
+			}
+        }
     }
+  
     /**
      * Initializes the drawer for the first person view
      * and the map view and then draws the initial screen

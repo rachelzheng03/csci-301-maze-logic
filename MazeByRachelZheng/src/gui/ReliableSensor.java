@@ -3,14 +3,6 @@
  */
 package gui;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
-import javax.swing.plaf.basic.BasicInternalFrameTitlePane.IconifyAction;
-
-import org.junit.jupiter.params.shadow.com.univocity.parsers.annotations.FixedWidth;
-import org.junit.jupiter.params.shadow.com.univocity.parsers.annotations.UpperCase;
-
 import generation.CardinalDirection;
 import generation.Floorplan;
 import generation.Maze;
@@ -57,7 +49,7 @@ public class ReliableSensor implements DistanceSensor {
 			throw new IllegalArgumentException();
 		
 		float currentPower=powersupply[0];
-		//if sensor not operational, throw SensorFailure
+		//if sensor not operational, throw SensorFailure 
 		
 		//if power is less than 0, throw IllegalArgumentException
 		if(currentPower<0)

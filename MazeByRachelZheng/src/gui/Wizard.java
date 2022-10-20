@@ -3,9 +3,8 @@
  */
 package gui;
 
-import javax.swing.plaf.basic.BasicInternalFrameTitlePane.MoveAction;
+import java.util.logging.Logger;
 
-import org.hamcrest.core.IsInstanceOf;
 import generation.CardinalDirection;
 import generation.Maze;
 import gui.Robot.Direction;
@@ -24,6 +23,7 @@ public class Wizard implements RobotDriver {
 	private Maze maze;
 	private float startBattery;
 	
+
 	//constructor
 	public Wizard() {
 		reliableRobot=null;
@@ -47,10 +47,10 @@ public class Wizard implements RobotDriver {
 		// TODO Auto-generated method stub
 		//at each position, get neighbor closer to exit
 		//move to said neighbor, rotate if needed
-		//if robot moves into wall, throw exception
-		//if robot does not have sufficient energy, throw exception
-		//deduct energy costs
-		//repeat until robot is facing the exit
+//		if robot moves into wall, throw exception
+//		if robot does not have sufficient energy, throw exception
+//		deduct energy costs
+//		repeat until robot is facing the exit
 		while (!reliableRobot.isAtExit()) {
 			drive1Step2Exit();
 		}
@@ -62,10 +62,11 @@ public class Wizard implements RobotDriver {
 	public boolean drive1Step2Exit() throws Exception {
 		// TODO Auto-generated method stub
 		if (reliableRobot.isAtExit()) {
-			while(!reliableRobot.canSeeThroughTheExitIntoEternity(Direction.FORWARD))
+			while(!reliableRobot.canSeeThroughTheExitIntoEternity(Direction.FORWARD)) {
 				reliableRobot.rotate(Turn.LEFT);
 				if(reliableRobot.hasStopped())
 					throw new Exception("Robot has stopped");	
+			}
 			return false;
 		}
 		//get neighbor closer to exit
@@ -74,28 +75,36 @@ public class Wizard implements RobotDriver {
 		assert(destination!=null);
 		//rotate to face neighbor
 		if (position[0]==destination[0]) {
-			if (position[1]>destination[1])
-				while(reliableRobot.getCurrentDirection()!=CardinalDirection.North)
+			if (position[1]>destination[1]) {
+				while(reliableRobot.getCurrentDirection()!=CardinalDirection.North) {
 					reliableRobot.rotate(Turn.LEFT);
 					if(reliableRobot.hasStopped())
 						throw new Exception("Robot has stopped");
-			else
-				while(reliableRobot.getCurrentDirection()!=CardinalDirection.South)
+				}
+			}
+			else {
+				while(reliableRobot.getCurrentDirection()!=CardinalDirection.South) {
 					reliableRobot.rotate(Turn.LEFT);
 					if(reliableRobot.hasStopped())
 						throw new Exception("Robot has stopped");
+				}
+			}
 		}
 		else if (position[1]==destination[1]) {
-			if (position[0]>destination[0])
-				while(reliableRobot.getCurrentDirection()!=CardinalDirection.West)
+			if (position[0]>destination[0]) {
+				while(reliableRobot.getCurrentDirection()!=CardinalDirection.West) {
 					reliableRobot.rotate(Turn.LEFT);
-				if(reliableRobot.hasStopped())
-					throw new Exception("Robot has stopped");
-			else
-				while(reliableRobot.getCurrentDirection()!=CardinalDirection.East)
+					if(reliableRobot.hasStopped())
+						throw new Exception("Robot has stopped");
+				}
+			}
+			else {
+				while(reliableRobot.getCurrentDirection()!=CardinalDirection.East) {
 					reliableRobot.rotate(Turn.LEFT);
-				if(reliableRobot.hasStopped())
-					throw new Exception("Robot has stopped");
+					if(reliableRobot.hasStopped())
+						throw new Exception("Robot has stopped");
+				}
+			}
 		}
 		reliableRobot.move(1);
 		if(reliableRobot.hasStopped())
