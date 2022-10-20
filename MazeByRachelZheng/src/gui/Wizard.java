@@ -3,8 +3,6 @@
  */
 package gui;
 
-import java.util.logging.Logger;
-
 import generation.CardinalDirection;
 import generation.Maze;
 import gui.Robot.Direction;
@@ -55,6 +53,7 @@ public class Wizard implements RobotDriver {
 			drive1Step2Exit();
 		}
 		drive1Step2Exit();
+		reliableRobot.move(1);
 		return true;
 	}
 

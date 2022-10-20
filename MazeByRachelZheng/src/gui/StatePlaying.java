@@ -6,7 +6,6 @@ import java.util.logging.Logger;
 import generation.CardinalDirection;
 import generation.Floorplan;
 import generation.Maze;
-import gui.Robot;
 
 
 /**
@@ -191,6 +190,7 @@ public class StatePlaying implements State {
         	wizard.setMaze(maze);
         	try {
 				wizard.drive2Exit();
+				
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

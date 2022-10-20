@@ -24,7 +24,6 @@ public class ReliableSensor implements DistanceSensor {
 	private static final float ENERGY_CONSUMPTION_SENSING=1; //how much energy it takes to sense in one direction 
 	protected Maze maze;
 	private Direction mountedDirection; //direction of sensor relative to the robot
-	private float battery; //
 	
 	//constructor
 	public ReliableSensor() {
@@ -59,7 +58,6 @@ public class ReliableSensor implements DistanceSensor {
 		if (currentPower==0)
 			throw new Error("Power Failure: power supply is insufficient for the operation");
 		//count how many steps it takes to get to a wall in the direction of the sensor relative to the robot
-		Floorplan floorplan=maze.getFloorplan();
 		int step=0;
 		assert(mountedDirection instanceof Direction);
 				
@@ -71,16 +69,16 @@ public class ReliableSensor implements DistanceSensor {
 		if (currentDirection==CardinalDirection.North) {
 			switch (mountedDirection) {
 			case FORWARD: 
-				step=stepsNorthUntilWall(currentPosition, floorplan);
+				step=stepsNorthUntilWall(currentPosition);
 				break;
 			case BACKWARD:
-				step=stepsSouthUntilWall(currentPosition, floorplan);
+				step=stepsSouthUntilWall(currentPosition);
 				break;
 			case LEFT:
-				step=stepsWestUntilWall(currentPosition, floorplan);
+				step=stepsWestUntilWall(currentPosition);
 				break;
 			case RIGHT:
-				step=stepsEastUntilWall(currentPosition, floorplan);
+				step=stepsEastUntilWall(currentPosition);
 				break;
 			}
 		}
@@ -93,16 +91,16 @@ public class ReliableSensor implements DistanceSensor {
 		else if (currentDirection==CardinalDirection.East) {
 			switch (mountedDirection) {
 			case FORWARD: 
-				step=stepsEastUntilWall(currentPosition, floorplan);
+				step=stepsEastUntilWall(currentPosition);
 				break;
 			case BACKWARD:
-				step=stepsWestUntilWall(currentPosition, floorplan);
+				step=stepsWestUntilWall(currentPosition);
 				break;
 			case LEFT:
-				step=stepsNorthUntilWall(currentPosition, floorplan);
+				step=stepsNorthUntilWall(currentPosition);
 				break;
 			case RIGHT:
-				step=stepsSouthUntilWall(currentPosition, floorplan);
+				step=stepsSouthUntilWall(currentPosition);
 				break;
 			}
 		}
@@ -115,16 +113,16 @@ public class ReliableSensor implements DistanceSensor {
 		else if (currentDirection==CardinalDirection.South) {
 			switch (mountedDirection) {
 			case FORWARD: 
-				step=stepsSouthUntilWall(currentPosition, floorplan);
+				step=stepsSouthUntilWall(currentPosition);
 				break;
 			case BACKWARD:
-				step=stepsNorthUntilWall(currentPosition, floorplan);
+				step=stepsNorthUntilWall(currentPosition);
 				break;
 			case LEFT:
-				step=stepsEastUntilWall(currentPosition, floorplan);
+				step=stepsEastUntilWall(currentPosition);
 				break;
 			case RIGHT:
-				step=stepsWestUntilWall(currentPosition, floorplan);
+				step=stepsWestUntilWall(currentPosition);
 				break;
 			}
 		}
@@ -137,16 +135,16 @@ public class ReliableSensor implements DistanceSensor {
 		else if (currentDirection==CardinalDirection.West) {
 			switch (mountedDirection) {
 			case FORWARD: 
-				step=stepsWestUntilWall(currentPosition, floorplan);
+				step=stepsWestUntilWall(currentPosition);
 				break;
 			case BACKWARD:
-				step=stepsEastUntilWall(currentPosition, floorplan);
+				step=stepsEastUntilWall(currentPosition);
 				break;
 			case LEFT:
-				step=stepsSouthUntilWall(currentPosition, floorplan);
+				step=stepsSouthUntilWall(currentPosition);
 				break;
 			case RIGHT:
-				step=stepsNorthUntilWall(currentPosition, floorplan);
+				step=stepsNorthUntilWall(currentPosition);
 				break;
 			}
 		}
@@ -165,15 +163,15 @@ public class ReliableSensor implements DistanceSensor {
 	 * @param floorplan
 	 * @return number of steps or Integer.MAX_VALUE if robot facing exit
 	 */
-	private int stepsNorthUntilWall(int[] currentPosition, Floorplan floorplan){
+	private int stepsNorthUntilWall(int[] currentPosition){
 		int step=0;
 		for (int h=currentPosition[1]; h>=0;h--) {
-			if (floorplan.hasWall(currentPosition[0], h, CardinalDirection.North))
+			if (maze.hasWall(currentPosition[0], h, CardinalDirection.North))
 				break;
 			//if robot facing exit return Integer.MAX_VALUE
-			if (floorplan.isExitPosition(currentPosition[0], h)&&!floorplan.isPartOfBorder(new Wallboard(currentPosition[0], h, CardinalDirection.North)))
+			if (maze.getExitPosition()[0]==currentPosition[0] && maze.getExitPosition()[1]==h && !maze.isValidPosition(currentPosition[0], h-1))
 				return Integer.MAX_VALUE;
-			if (floorplan.hasNoWall(currentPosition[0], h, CardinalDirection.North))
+			if (!maze.hasWall(currentPosition[0], h, CardinalDirection.North))
 				step++;
 		}
 		return step;
@@ -185,15 +183,15 @@ public class ReliableSensor implements DistanceSensor {
 	 * @param floorplan
 	 * @return number of steps or Integer.MAX_VALUE if robot facing exit
 	 */
-	private int stepsEastUntilWall(int[] currentPosition, Floorplan floorplan){
+	private int stepsEastUntilWall(int[] currentPosition){
 		int step=0;
 		for (int w=currentPosition[0]; w<maze.getWidth();w++) {
-			if (floorplan.hasWall(w, currentPosition[1], CardinalDirection.East))
+			if (maze.hasWall(w, currentPosition[1], CardinalDirection.East))
 				break;
 			//if robot facing exit return Integer.MAX_VALUE
-			if (floorplan.isExitPosition(w, currentPosition[1])&&!floorplan.isPartOfBorder(new Wallboard(w, currentPosition[1], CardinalDirection.East)))
+			if (maze.getExitPosition()[0]==w && maze.getExitPosition()[1]==currentPosition[1] &&!maze.isValidPosition(w+1, currentPosition[1]))
 				return Integer.MAX_VALUE;
-			if (floorplan.hasNoWall(w, currentPosition[1], CardinalDirection.East))
+			if (!maze.hasWall(w, currentPosition[1], CardinalDirection.East))
 				step++;
 		}
 		return step;
@@ -205,15 +203,15 @@ public class ReliableSensor implements DistanceSensor {
 	 * @param floorplan
 	 * @return number of steps or Integer.MAX_VALUE if robot facing exit
 	 */
-	private int stepsSouthUntilWall(int[] currentPosition, Floorplan floorplan){
+	private int stepsSouthUntilWall(int[] currentPosition){
 		int step=0;
 		for (int h=currentPosition[1]; h<maze.getHeight();h++) {
-			if (floorplan.hasWall(currentPosition[0], h, CardinalDirection.South))
+			if (maze.hasWall(currentPosition[0], h, CardinalDirection.South))
 				break;
 			//if robot facing exit return Integer.MAX_VALUE
-			if (floorplan.isExitPosition(currentPosition[0], h)&&!floorplan.isPartOfBorder(new Wallboard(currentPosition[0], h, CardinalDirection.South)))
+			if (maze.getExitPosition()[0]==currentPosition[0] && maze.getExitPosition()[1]== h&&!maze.isValidPosition(currentPosition[0], h+1))
 				return Integer.MAX_VALUE;
-			if (floorplan.hasNoWall(currentPosition[0], h, CardinalDirection.South))
+			if (!maze.hasWall(currentPosition[0], h, CardinalDirection.South))
 				step++;
 		}
 		return step;
@@ -225,15 +223,15 @@ public class ReliableSensor implements DistanceSensor {
 	 * @param floorplan
 	 * @return number of steps or Integer.MAX_VALUE if robot facing exit
 	 */
-	private int stepsWestUntilWall(int[] currentPosition, Floorplan floorplan){
+	private int stepsWestUntilWall(int[] currentPosition){
 		int step=0;
 		for (int w=currentPosition[0]; w>=0;w--) {
-			if (floorplan.hasWall(w, currentPosition[1], CardinalDirection.West))
+			if (maze.hasWall(w, currentPosition[1], CardinalDirection.West))
 				break;
 			//if robot facing exit return Integer.MAX_VALUE
-			if (floorplan.isExitPosition(w, currentPosition[1])&&!floorplan.isPartOfBorder(new Wallboard(w, currentPosition[1], CardinalDirection.West)))
+			if (maze.getExitPosition()[0]==w && maze.getExitPosition()[1]==currentPosition[1]&&!maze.isValidPosition(w-1, currentPosition[1]))
 				return Integer.MAX_VALUE;
-			if (floorplan.hasNoWall(w, currentPosition[1], CardinalDirection.West))
+			if (!maze.hasWall(w, currentPosition[1], CardinalDirection.West))
 				step++;
 		}
 		return step;
