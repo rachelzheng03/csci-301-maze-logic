@@ -58,8 +58,6 @@ public class ReliableRobot implements Robot {
 	public void addDistanceSensor(DistanceSensor sensor, Direction mountedDirection) {
 		// TODO Auto-generated method stub
 		//set sensor's mounted direction
-		//sensor=new ReliableSensor();
-		//assert(sensor!=null);
 		sensor.setSensorDirection(mountedDirection);
 	}
 
