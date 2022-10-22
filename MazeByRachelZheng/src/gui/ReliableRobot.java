@@ -4,7 +4,6 @@
 package gui;
 
 import generation.CardinalDirection;
-import generation.Maze;
 import gui.Constants.UserInput;
 
 /**
@@ -340,7 +339,19 @@ public class ReliableRobot implements Robot {
 		// TODO Auto-generated method stub
 		//check direction robot is facing and location of robot
 		//return infinity if facing exit
+		System.out.println(direction);
+		
+
 		float[] powersupply = {batteryLevel};
+		try {
+			System.out.println(getCurrentDirection());
+
+			System.out.println(forwardSensor.distanceToObstacle(getCurrentPosition(), getCurrentDirection(), powersupply));
+
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		switch (direction)	{	
 		case FORWARD: 
 			try {

@@ -4,9 +4,7 @@
 package gui;
 
 import generation.CardinalDirection;
-import generation.Floorplan;
 import generation.Maze;
-import generation.Wallboard;
 import gui.Robot.Direction;
 
 /**
@@ -23,7 +21,7 @@ public class ReliableSensor implements DistanceSensor {
 	//private fields
 	private static final float ENERGY_CONSUMPTION_SENSING=1; //how much energy it takes to sense in one direction 
 	protected Maze maze;
-	private Direction mountedDirection; //direction of sensor relative to the robot
+	protected Direction mountedDirection; //direction of sensor relative to the robot
 	
 	//constructor
 	public ReliableSensor() {
@@ -35,9 +33,12 @@ public class ReliableSensor implements DistanceSensor {
 	public int distanceToObstacle(int[] currentPosition, CardinalDirection currentDirection, float[] powersupply)
 			throws Exception {
 		// TODO Auto-generated method stub
-		//if any parameters are null, throw IllegalArgument Exception
+
+		//if any parameters are null, throw IllegalArgument Exception			
 		if (currentPosition==null||currentDirection==null||powersupply==null)
 			throw new IllegalArgumentException();
+		
+		assert(maze!=null);
 		
 		//if "x" of current position is out of bounds, throw IllegalArgument Exception
 		if (currentPosition[0] < 0 || currentPosition[0] >= maze.getWidth()) 
@@ -47,7 +48,7 @@ public class ReliableSensor implements DistanceSensor {
 		if(currentPosition[1] < 0 || currentPosition[1] >= maze.getHeight())
 			throw new IllegalArgumentException();
 		
-		float currentPower=powersupply[0];
+		float currentPower = powersupply[0];
 		//if sensor not operational, throw SensorFailure 
 		
 		//if power is less than 0, throw IllegalArgumentException
@@ -165,14 +166,15 @@ public class ReliableSensor implements DistanceSensor {
 	 */
 	private int stepsNorthUntilWall(int[] currentPosition){
 		int step=0;
-		for (int h=currentPosition[1]; h>=0;h--) {
-			if (maze.hasWall(currentPosition[0], h, CardinalDirection.North))
+		for (int h=currentPosition[1]; h<maze.getHeight();h++) {
+			if (maze.hasWall(currentPosition[0], h, CardinalDirection.South))
 				break;
 			//if robot facing exit return Integer.MAX_VALUE
-			if (maze.getExitPosition()[0]==currentPosition[0] && maze.getExitPosition()[1]==h && !maze.isValidPosition(currentPosition[0], h-1))
+			if (maze.getExitPosition()[0]==currentPosition[0] && maze.getExitPosition()[1]==h && !maze.isValidPosition(currentPosition[0], h+1))
 				return Integer.MAX_VALUE;
-			if (!maze.hasWall(currentPosition[0], h, CardinalDirection.North))
+			if (!maze.hasWall(currentPosition[0], h, CardinalDirection.South))
 				step++;
+			
 		}
 		return step;
 	}
@@ -205,13 +207,13 @@ public class ReliableSensor implements DistanceSensor {
 	 */
 	private int stepsSouthUntilWall(int[] currentPosition){
 		int step=0;
-		for (int h=currentPosition[1]; h<maze.getHeight();h++) {
-			if (maze.hasWall(currentPosition[0], h, CardinalDirection.South))
+		for (int h=currentPosition[1]; h>=0;h--) {
+			if (maze.hasWall(currentPosition[0], h, CardinalDirection.North))
 				break;
 			//if robot facing exit return Integer.MAX_VALUE
-			if (maze.getExitPosition()[0]==currentPosition[0] && maze.getExitPosition()[1]== h&&!maze.isValidPosition(currentPosition[0], h+1))
+			if (maze.getExitPosition()[0]==currentPosition[0] && maze.getExitPosition()[1]== h&&!maze.isValidPosition(currentPosition[0], h-1))
 				return Integer.MAX_VALUE;
-			if (!maze.hasWall(currentPosition[0], h, CardinalDirection.South))
+			if (!maze.hasWall(currentPosition[0], h, CardinalDirection.North))
 				step++;
 		}
 		return step;
@@ -260,19 +262,20 @@ public class ReliableSensor implements DistanceSensor {
 		// TODO Auto-generated method stub
 		return ENERGY_CONSUMPTION_SENSING;
 	}
-
+	
+	
 	@Override
 	public void startFailureAndRepairProcess(int meanTimeBetweenFailures, int meanTimeToRepair)
 			throws UnsupportedOperationException {
 		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("method not supported for reliable sensor");
+		throw new UnsupportedOperationException("method not implemented for reliable sensor");
 
 	}
 
 	@Override
 	public void stopFailureAndRepairProcess() throws UnsupportedOperationException {
 		// TODO Auto-generated method stub
-		throw new UnsupportedOperationException("method not supported for reliable sensor");
+		throw new UnsupportedOperationException("method not implemented for reliable sensor");
 
 	}
 

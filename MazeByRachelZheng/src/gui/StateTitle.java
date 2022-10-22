@@ -209,7 +209,9 @@ public class StateTitle implements State {
         	// HINT: check http://download.oracle.com/javase/6/docs/api/java/util/Random.html
         	Random random = new Random();
         	seed=random.nextInt();
+
         }
+        System.out.println(seed);
         nextState.setSeed(seed);
         
         LOGGER.fine("Control switches from title to generating screen, maze will be newly generated for size " + skillLevel);
