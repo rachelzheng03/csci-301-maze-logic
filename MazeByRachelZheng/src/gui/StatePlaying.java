@@ -191,9 +191,9 @@ public class StatePlaying implements State {
         	wizard.setRobot(control.getRobot());
         	wizard.setMaze(maze);
         	try {
-        		wizard.drive2Exit();
-//				if(wizard.drive2Exit())
-//					//robot.move(1);
+//        		wizard.drive2Exit();
+				if(wizard.drive2Exit())
+					robot.move(1);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
