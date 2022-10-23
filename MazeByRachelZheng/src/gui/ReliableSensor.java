@@ -61,7 +61,9 @@ public class ReliableSensor implements DistanceSensor {
 		//count how many steps it takes to get to a wall in the direction of the sensor relative to the robot
 		int step=0;
 		assert(mountedDirection instanceof Direction);
-				
+		
+		//BEWARE: north and south are flipped (counter-intuitive)
+		
 		//case1: current direction is North.
 		//1.a mounted direction is forward: decrement height from current height until wall is hit or position is exit
 		//1.b mounted direction is backward: increment height from current height until wall is hit or position is exit
@@ -70,16 +72,16 @@ public class ReliableSensor implements DistanceSensor {
 		if (currentDirection==CardinalDirection.North) {
 			switch (mountedDirection) {
 			case FORWARD: 
-				step=stepsNorthUntilWall(currentPosition);
-				break;
-			case BACKWARD:
 				step=stepsSouthUntilWall(currentPosition);
 				break;
+			case BACKWARD:
+				step=stepsNorthUntilWall(currentPosition);
+				break;
 			case LEFT:
-				step=stepsWestUntilWall(currentPosition);
+				step=stepsEastUntilWall(currentPosition);
 				break;
 			case RIGHT:
-				step=stepsEastUntilWall(currentPosition);
+				step=stepsWestUntilWall(currentPosition);
 				break;
 			}
 		}
@@ -114,16 +116,16 @@ public class ReliableSensor implements DistanceSensor {
 		else if (currentDirection==CardinalDirection.South) {
 			switch (mountedDirection) {
 			case FORWARD: 
-				step=stepsSouthUntilWall(currentPosition);
-				break;
-			case BACKWARD:
 				step=stepsNorthUntilWall(currentPosition);
 				break;
+			case BACKWARD:
+				step=stepsSouthUntilWall(currentPosition);
+				break;
 			case LEFT:
-				step=stepsEastUntilWall(currentPosition);
+				step=stepsWestUntilWall(currentPosition);
 				break;
 			case RIGHT:
-				step=stepsWestUntilWall(currentPosition);
+				step=stepsEastUntilWall(currentPosition);
 				break;
 			}
 		}

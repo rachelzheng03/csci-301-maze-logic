@@ -211,7 +211,6 @@ public class StateTitle implements State {
         	seed=random.nextInt();
 
         }
-        System.out.println(seed);
         nextState.setSeed(seed);
         
         LOGGER.fine("Control switches from title to generating screen, maze will be newly generated for size " + skillLevel);

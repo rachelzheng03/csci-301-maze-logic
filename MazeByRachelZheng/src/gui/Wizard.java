@@ -53,7 +53,6 @@ public class Wizard implements RobotDriver {
 			drive1Step2Exit();
 		}
 		drive1Step2Exit();
-		reliableRobot.move(1);
 		return true;
 	}
 

@@ -1,6 +1,8 @@
 package gui;
 
 import gui.Constants.UserInput;
+import gui.Robot.Direction;
+
 import java.util.logging.Logger;
 
 import generation.CardinalDirection;
@@ -181,16 +183,17 @@ public class StatePlaying implements State {
         if (control.getRobot()!=null&&control.getDriver()!=null) {
         	ReliableRobot robot = (ReliableRobot) control.getRobot();
         	robot.setController(control);
-        	robot.forwardSensor.setMaze(maze);
-        	robot.backwardSensor.setMaze(maze);
-        	robot.leftSensor.setMaze(maze);
-        	robot.rightSensor.setMaze(maze);
+        	robot.addDistanceSensor(robot.forwardSensor, Direction.FORWARD);
+        	robot.addDistanceSensor(robot.backwardSensor, Direction.BACKWARD);
+    		robot.addDistanceSensor(robot.leftSensor, Direction.LEFT);
+    		robot.addDistanceSensor(robot.rightSensor, Direction.RIGHT);
         	RobotDriver wizard = control.getDriver();
         	wizard.setRobot(control.getRobot());
         	wizard.setMaze(maze);
         	try {
-				wizard.drive2Exit();
-				
+        		wizard.drive2Exit();
+//				if(wizard.drive2Exit())
+//					//robot.move(1);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -543,7 +546,7 @@ public class StatePlaying implements State {
     
     private void logPosition() {
     	 int[] tmpDxDy = cd.getDxDyDirection();
-    	 LOGGER.fine("x="+px+",y="+py+",dx="+tmpDxDy[0]+",dy="+tmpDxDy[1]+",angle="+cd.angle());
+    	 LOGGER.fine("x="+px+",y="+py+",dx="+tmpDxDy[0]+",dy="+tmpDxDy[1]+",angle="+cd.angle()+", current direction: "+getCurrentDirection());
     	//LOGGER.fine("x="+px+",y="+py+",dx="+dx+",dy="+dy+",angle="+angle);
     	/*
         if (!deepdebug)

@@ -125,13 +125,13 @@ class ReliableSensorTest {
 		
 		try {
 			//test North facing robot, forward sensor
-			assertEquals(0, forwardSensor.distanceToObstacle(position, CardinalDirection.North, power));
+			assertEquals(2, forwardSensor.distanceToObstacle(position, CardinalDirection.North, power));
 			//test North facing robot, right sensor
-			assertEquals(0, rightSensor.distanceToObstacle(position, CardinalDirection.North, power));
+			assertEquals(1, rightSensor.distanceToObstacle(position, CardinalDirection.North, power));
 			//test North facing robot, left sensor
-			assertEquals(1, leftSensor.distanceToObstacle(position, CardinalDirection.North, power));
+			assertEquals(0, leftSensor.distanceToObstacle(position, CardinalDirection.North, power));
 			//test North facing robot, backward sensor
-			assertEquals(2, backwardSensor.distanceToObstacle(position, CardinalDirection.North, power));
+			assertEquals(0, backwardSensor.distanceToObstacle(position, CardinalDirection.North, power));
 			
 			//test East facing robot, forward sensor
 			assertEquals(0, forwardSensor.distanceToObstacle(position, CardinalDirection.East, power));
@@ -143,13 +143,13 @@ class ReliableSensorTest {
 			assertEquals(1, backwardSensor.distanceToObstacle(position, CardinalDirection.East, power));
 
 			//test South facing robot, forward sensor
-			assertEquals(2, forwardSensor.distanceToObstacle(position, CardinalDirection.South, power));
+			assertEquals(0, forwardSensor.distanceToObstacle(position, CardinalDirection.South, power));
 			//test South facing robot, right sensor
-			assertEquals(1, rightSensor.distanceToObstacle(position, CardinalDirection.South, power));
+			assertEquals(0, rightSensor.distanceToObstacle(position, CardinalDirection.South, power));
 			//test South facing robot, left sensor
-			assertEquals(0, leftSensor.distanceToObstacle(position, CardinalDirection.South, power));
+			assertEquals(1, leftSensor.distanceToObstacle(position, CardinalDirection.South, power));
 			//test South facing robot, backward sensor
-			assertEquals(0, backwardSensor.distanceToObstacle(position, CardinalDirection.South, power));
+			assertEquals(2, backwardSensor.distanceToObstacle(position, CardinalDirection.South, power));
 
 			//test West facing robot, forward sensor
 			assertEquals(1, forwardSensor.distanceToObstacle(position, CardinalDirection.West, power));
@@ -162,26 +162,26 @@ class ReliableSensorTest {
 
 			//test that method return Integer.Max_Value if robot is facing the exit
 			int[] exit={2,0};
-			assertEquals(Integer.MAX_VALUE, forwardSensor.distanceToObstacle(exit, CardinalDirection.South, power));
+			assertEquals(Integer.MAX_VALUE, backwardSensor.distanceToObstacle(exit, CardinalDirection.South, power));
 			assertEquals(Integer.MAX_VALUE, rightSensor.distanceToObstacle(exit, CardinalDirection.East, power));
 			assertEquals(Integer.MAX_VALUE,	leftSensor.distanceToObstacle(exit, CardinalDirection.West, power));
-			assertEquals(Integer.MAX_VALUE, backwardSensor.distanceToObstacle(exit, CardinalDirection.North, power));
+			assertEquals(Integer.MAX_VALUE, forwardSensor.distanceToObstacle(exit, CardinalDirection.North, power));
 			
 			order.setSeed(14);
 			factory.order(order);
 			factory.waitTillDelivered();
 			maze = order.getMaze();
-			leftSensor.setMaze(maze);
+			rightSensor.setMaze(maze);
 			int[] exit2=maze.getExitPosition();
-			assertEquals(Integer.MAX_VALUE, leftSensor.distanceToObstacle(exit2, CardinalDirection.North, power));
+			assertEquals(Integer.MAX_VALUE, rightSensor.distanceToObstacle(exit2, CardinalDirection.North, power));
 
 			order.setSeed(-326469280);
 			factory.order(order);
 			factory.waitTillDelivered();
 			maze = order.getMaze();
-			rightSensor.setMaze(maze);
+			leftSensor.setMaze(maze);
 			int[] exit3 = maze.getExitPosition();
-			assertEquals(Integer.MAX_VALUE, rightSensor.distanceToObstacle(exit3, CardinalDirection.North, power));
+			assertEquals(Integer.MAX_VALUE, leftSensor.distanceToObstacle(exit3, CardinalDirection.North, power));
 
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

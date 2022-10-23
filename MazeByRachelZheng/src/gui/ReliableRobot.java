@@ -23,7 +23,7 @@ public class ReliableRobot implements Robot {
 	private Control controller;
 	private float batteryLevel;
 	private final static float ENERGY_FOR_FULL_ROTATION=12;
-	private final static float ENERGY_FOR_STEP_FORWARD=12;
+	private final static float ENERGY_FOR_STEP_FORWARD=6;
 	private int odometer; //distance traveled
 	protected ReliableSensor forwardSensor;
 	protected ReliableSensor backwardSensor;
@@ -37,10 +37,6 @@ public class ReliableRobot implements Robot {
 		backwardSensor=new ReliableSensor();
 		leftSensor=new ReliableSensor();
 		rightSensor=new ReliableSensor();
-		addDistanceSensor(forwardSensor, Direction.FORWARD);
-		addDistanceSensor(backwardSensor, Direction.BACKWARD);
-		addDistanceSensor(leftSensor, Direction.LEFT);
-		addDistanceSensor(rightSensor, Direction.RIGHT);
 		hasStopped=false;
 		controller=null;
 		odometer=0;
@@ -59,6 +55,7 @@ public class ReliableRobot implements Robot {
 		// TODO Auto-generated method stub
 		//set sensor's mounted direction
 		sensor.setSensorDirection(mountedDirection);
+		sensor.setMaze(controller.getMaze());
 	}
 
 	@Override
@@ -93,8 +90,10 @@ public class ReliableRobot implements Robot {
 	@Override
 	public void setBatteryLevel(float level) {
 		// TODO Auto-generated method stub
-		if (level<=0)
+		if (level<=0) {
 			hasStopped=true;
+			return;
+		}
 		this.batteryLevel=level;
 		
 
@@ -131,10 +130,12 @@ public class ReliableRobot implements Robot {
 	public void rotate(Turn turn) {
 		// TODO Auto-generated method stub
 		//check if any energy is available at all
-		if (batteryLevel<=0)
+		if (batteryLevel<=0) {
+			hasStopped=true;
 			return;
+		}
 		//check if energy is sufficient
-		batteryLevel=batteryLevel-3;
+		batteryLevel=batteryLevel-(ENERGY_FOR_FULL_ROTATION/4);
 		if (batteryLevel<0) {
 			hasStopped=true;
 			return;
@@ -149,7 +150,11 @@ public class ReliableRobot implements Robot {
 		}
 		else if (turn==Turn.AROUND) {
 			controller.currentState.handleUserInput(UserInput.RIGHT, 0);
-			batteryLevel=batteryLevel-3;
+			if (batteryLevel<=0) {
+				hasStopped=true;
+				return;
+			}
+			batteryLevel=batteryLevel-(ENERGY_FOR_FULL_ROTATION/4);
 			if (batteryLevel<=0) 
 				hasStopped=true;
 			else {
@@ -162,26 +167,30 @@ public class ReliableRobot implements Robot {
 	public void move(int distance) {
 		// TODO Auto-generated method stub
 		int xPosition;
-		try {
-			xPosition = getCurrentPosition()[0];
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return;
-		}
 		int yPosition;
-		try {
-			yPosition = getCurrentPosition()[1];
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return;
-		}
+
 		
 		for(int i=0; i<distance; i++) {
-			//check if any energy is available at all
-			if (batteryLevel<=0)
+			try {
+				xPosition = getCurrentPosition()[0];
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 				return;
+			}
+
+			try {
+				yPosition = getCurrentPosition()[1];
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				return;
+			}
+			//check if any energy is available at all
+			if (batteryLevel<=0) {
+				hasStopped=true;
+				return;
+			}
 			//check if energy is sufficient
 			batteryLevel=batteryLevel-6;
 			if (batteryLevel<0) {
@@ -190,6 +199,7 @@ public class ReliableRobot implements Robot {
 			}
 			//check if robot hits wall
 			if(controller.getMaze().hasWall(xPosition, yPosition, getCurrentDirection())) {
+				System.out.println("robot hit a wall");
 				hasStopped=true;
 				return;
 			}
@@ -221,34 +231,44 @@ public class ReliableRobot implements Robot {
 			return;
 		}
 		
-		//if jump will take robot out of maze, then robot is stopped
-		switch (controller.getCurrentDirection()) {
-		case North: 
-			if (yPosition==0)
-				hasStopped=true;
-				return;
-		case East:
-			if (xPosition==controller.getMaze().getWidth())
-				hasStopped=true;
-				return;
-		case South:
-			if (yPosition==controller.getMaze().getHeight())
-				hasStopped=true;
-				return;
-		case West:
-			if (xPosition==0)
-				hasStopped=true;
-				return;
-		}
-		
 		//check if any energy is available at all
-		if (batteryLevel<=0)
+		if (batteryLevel<=0) {
+			hasStopped=true;
 			return;
+		}
 		//check if energy is sufficient
 		batteryLevel=batteryLevel-40;
 		if (batteryLevel<0) {
 			hasStopped=true;
 			return;
+		}
+		
+		//if jump will take robot out of maze, then robot is stopped
+		switch (controller.getCurrentDirection()) {
+		case North: 
+			if (yPosition==0) {
+				hasStopped=true;
+				return;
+			}
+			break;
+		case East:
+			if (xPosition==controller.getMaze().getWidth()-1) {
+				hasStopped=true;
+				return;
+			}
+			break;
+		case South:
+			if (yPosition==controller.getMaze().getHeight()-1) {
+				hasStopped=true;
+				return;
+			}
+			break;
+		case West:
+			if (xPosition==0) {
+				hasStopped=true;
+				return;
+			}
+			break;
 		}
 		controller.currentState.handleUserInput(UserInput.JUMP, 0);
 		//increase odometer (number of 1 cell steps) by 1
@@ -290,6 +310,13 @@ public class ReliableRobot implements Robot {
 		// TODO Auto-generated method stub
 		return hasStopped;
 	}
+	
+	/**
+	 * Resets hasStopped. For TESTING purposes.
+	 */
+	public void resetHasStopped(boolean stopped) {
+		hasStopped=stopped;
+	}
 
 	@Override
 	public int distanceToObstacle(Direction direction) throws UnsupportedOperationException {
@@ -298,7 +325,9 @@ public class ReliableRobot implements Robot {
 		switch (direction)	{	
 		case FORWARD: 
 			try {
-				return forwardSensor.distanceToObstacle(getCurrentPosition(), getCurrentDirection(), powersupply);
+				int steps = forwardSensor.distanceToObstacle(getCurrentPosition(), getCurrentDirection(), powersupply);
+				batteryLevel=batteryLevel-1;
+				return steps;
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -306,7 +335,9 @@ public class ReliableRobot implements Robot {
 			break;
 		case BACKWARD:
 			try {
-				return backwardSensor.distanceToObstacle(getCurrentPosition(), getCurrentDirection(), powersupply);
+				int steps = backwardSensor.distanceToObstacle(getCurrentPosition(), getCurrentDirection(), powersupply);
+				batteryLevel=batteryLevel-1;
+				return steps;
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -314,7 +345,9 @@ public class ReliableRobot implements Robot {
 			break;
 		case LEFT:
 			try {
-				return leftSensor.distanceToObstacle(getCurrentPosition(), getCurrentDirection(), powersupply);
+				int steps = leftSensor.distanceToObstacle(getCurrentPosition(), getCurrentDirection(), powersupply);
+				batteryLevel=batteryLevel-1;
+				return steps;
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -322,8 +355,10 @@ public class ReliableRobot implements Robot {
 			break;
 		case RIGHT:
 			try {
-				return rightSensor.distanceToObstacle(getCurrentPosition(), getCurrentDirection(), powersupply);
-			} catch (Exception e) {
+				int steps = rightSensor.distanceToObstacle(getCurrentPosition(), getCurrentDirection(), powersupply);
+				batteryLevel=batteryLevel-1;
+				return steps;			
+				} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
@@ -336,23 +371,13 @@ public class ReliableRobot implements Robot {
 	public boolean canSeeThroughTheExitIntoEternity(Direction direction) throws UnsupportedOperationException {
 		// TODO Auto-generated method stub
 		//check direction robot is facing and location of robot
-		//return infinity if facing exit
-		System.out.println(direction);
-		
-
+		//return infinity if facing exit		
 		float[] powersupply = {batteryLevel};
-		try {
-			System.out.println(getCurrentDirection());
-
-			System.out.println(forwardSensor.distanceToObstacle(getCurrentPosition(), getCurrentDirection(), powersupply));
-
-		} catch (Exception e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
 		switch (direction)	{	
 		case FORWARD: 
 			try {
+				if (forwardSensor.distanceToObstacle(getCurrentPosition(), getCurrentDirection(), powersupply)==Integer.MAX_VALUE)
+					batteryLevel-=1;
 				return forwardSensor.distanceToObstacle(getCurrentPosition(), getCurrentDirection(), powersupply)==Integer.MAX_VALUE;
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
@@ -361,6 +386,8 @@ public class ReliableRobot implements Robot {
 			break;
 		case BACKWARD:
 			try {
+				if (backwardSensor.distanceToObstacle(getCurrentPosition(), getCurrentDirection(), powersupply)==Integer.MAX_VALUE)
+					batteryLevel-=1;
 				return backwardSensor.distanceToObstacle(getCurrentPosition(), getCurrentDirection(), powersupply)==Integer.MAX_VALUE;
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
@@ -369,6 +396,8 @@ public class ReliableRobot implements Robot {
 			break;
 		case LEFT:
 			try {
+				if (leftSensor.distanceToObstacle(getCurrentPosition(), getCurrentDirection(), powersupply)==Integer.MAX_VALUE)
+					batteryLevel-=1;
 				return leftSensor.distanceToObstacle(getCurrentPosition(), getCurrentDirection(), powersupply)==Integer.MAX_VALUE;
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
@@ -377,6 +406,8 @@ public class ReliableRobot implements Robot {
 			break;
 		case RIGHT:
 			try {
+				if (rightSensor.distanceToObstacle(getCurrentPosition(), getCurrentDirection(), powersupply)==Integer.MAX_VALUE)
+					batteryLevel-=1;
 				return rightSensor.distanceToObstacle(getCurrentPosition(), getCurrentDirection(), powersupply)==Integer.MAX_VALUE;
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
