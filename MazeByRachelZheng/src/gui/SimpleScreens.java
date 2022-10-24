@@ -110,31 +110,47 @@ public class SimpleScreens {
      * Draws the finish screen, screen content is hard coded
      * @param panel holds the graphics for the off-screen image
      */
-	void redrawFinish(MazePanel panel) {
+	void redrawFinish(MazePanel panel, boolean wonGame) {
 		Graphics g = panel.getBufferGraphics() ;
         if (null == g) {
         	LOGGER.warning(errorMsg) ;
         }
         else {
-            redrawFinish(g);
+            redrawFinish(g, wonGame);
         }
 	}
 	/**
 	 * Helper method for redraw to draw final screen, screen is hard coded
 	 * @param gc graphics is the off-screen image
 	 */
-	private void redrawFinish(Graphics gc) {
+	private void redrawFinish(Graphics gc, boolean wonGame) {
 		// produce blue background
 		drawBackground(gc);
-		// write the title 
-		updateFontAndColor(gc, largeBannerFont, MazeColors.TITLE_LARGE);
-		centerString(gc, "You won!", 100);
-		// write some extra blurb
-		updateFontAndColor(gc, smallBannerFont, MazeColors.TITLE_SMALL);
-		centerString(gc, "Congratulations!", 160);
-		// write the instructions
-		gc.setColor(ColorTheme.getColor(MazeColors.TITLE_DEFAULT));
-		centerString(gc, "Hit any key to restart", 300);
+		if (wonGame) {
+			// write the title 
+			updateFontAndColor(gc, largeBannerFont, MazeColors.TITLE_LARGE);
+			centerString(gc, "You won!", 100);
+			// write some extra blurb
+			updateFontAndColor(gc, smallBannerFont, MazeColors.TITLE_SMALL);
+			centerString(gc, "Congratulations!", 160);
+			if(pathLength>0&&energyConsumption>0) {
+				centerString(gc, "Path Length: " + pathLength, 200);
+				centerString(gc, "Energy Consumption: " + energyConsumption, 240);
+			}
+			// write the instructions
+			gc.setColor(ColorTheme.getColor(MazeColors.TITLE_DEFAULT));
+			centerString(gc, "Hit any key to restart", 300);
+		}
+		else {
+			updateFontAndColor(gc, largeBannerFont, MazeColors.TITLE_LARGE);
+			centerString(gc, "You Lost", 100);
+			// write some extra blurb
+			updateFontAndColor(gc, smallBannerFont, MazeColors.TITLE_SMALL);
+			centerString(gc, "Robot has crashed or ran out of battery.", 160);
+			// write the instructions
+			gc.setColor(ColorTheme.getColor(MazeColors.TITLE_DEFAULT));
+			centerString(gc, "Hit any key to restart", 300);
+		}
 	}
     /**
      * Draws the generating screen, screen content is hard coded
@@ -177,5 +193,17 @@ public class SimpleScreens {
 
 	final Font largeBannerFont = new Font("TimesRoman", Font.BOLD, 48);
 	final Font smallBannerFont = new Font("TimesRoman", Font.BOLD, 16);
+	private int pathLength;
+	private float energyConsumption;
+
+	public void setPathLength(int pathLength) {
+		// TODO Auto-generated method stub
+		this.pathLength=pathLength;
+	}
+	public void setEnergyConsumption(float energyConsumption) {
+		// TODO Auto-generated method stub
+		this.energyConsumption=energyConsumption;
+		
+	}
 
 }

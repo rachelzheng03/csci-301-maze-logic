@@ -108,7 +108,9 @@ public class StatePlaying implements State {
      * to make sure control variable has been set.
      * initial setting: false, start sets it to true.
      */
-    boolean started;  
+    boolean started;
+
+	private float energyConsumption;  
   
     /**
      * Constructor uses default settings but does not deliver a fully operation instance,
@@ -197,7 +199,7 @@ public class StatePlaying implements State {
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-				switchFromPlayingToWinning(0);
+				switchFromPlayingToWinning(wizard.getPathLength(), false);
 			}
         }
     }
@@ -235,7 +237,7 @@ public class StatePlaying implements State {
      * Switches the controller to the final screen
      * @param pathLength gives the length of the path
      */
-    public void switchFromPlayingToWinning(int pathLength) {
+    public void switchFromPlayingToWinning(int pathLength, boolean wonGame) {
     	// need to instantiate and configure the winning state
         StateWinning currentState = new StateWinning();
         
@@ -243,6 +245,11 @@ public class StatePlaying implements State {
         // 1) the path length
         // 
         currentState.setPathLength(pathLength);
+        currentState.setWonGame(wonGame);
+        if (control.getDriver()!=null) {
+        	energyConsumption=control.getDriver().getEnergyConsumption();
+        	currentState.setConsumptionEnergy(energyConsumption);
+        }
         
         LOGGER.fine("Control switches from playing to winning screen, game completed.");
         
@@ -297,7 +304,12 @@ public class StatePlaying implements State {
             // check termination, did we leave the maze?
             if (isOutside(px,py)) {
             	// TODO: provide actual path length
-                switchFromPlayingToWinning(0);
+            	if(control.getDriver()!=null) {
+            		switchFromPlayingToWinning(control.getDriver().getPathLength(), true);
+            	}
+            	else {
+            		switchFromPlayingToWinning(0, true);
+				}
             }
             break;
         case LEFT: // turn left
@@ -314,7 +326,7 @@ public class StatePlaying implements State {
             // check termination, did we leave the maze?
             if (isOutside(px,py)) {
             	// TODO: provide actual path length
-                switchFromPlayingToWinning(0);
+                switchFromPlayingToWinning(0, true);
             }
             break;
         case RETURNTOTITLE: // escape to title screen

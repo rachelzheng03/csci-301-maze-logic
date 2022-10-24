@@ -67,6 +67,10 @@ public class StateWinning implements State {
      */
     int pathLength;
     
+    boolean wonGame;
+
+	private float energyConsumption;
+    
     /**
      * Default constructor with internal constraint that
      * method {@link #start(Controller, MazePanel) start}
@@ -105,7 +109,9 @@ public class StateWinning implements State {
     	}
         // otherwise show finish screen with winning message
         // draw content on panel
-        view.redrawFinish(panel);
+        view.setPathLength(pathLength);
+        view.setEnergyConsumption(energyConsumption);
+        view.redrawFinish(panel, wonGame);
         // update screen with panel content
         panel.update();
 
@@ -142,7 +148,10 @@ public class StateWinning implements State {
         
         // update the context class with the new state
         // and hand over control to the new state
-
+        if(control.driver!=null) {
+        	//reset odometer when playing another round of the game
+        	control.getRobot().resetOdometer();
+        }
         control.setState(currentState);
         currentState.start(control, panel);
     }
@@ -154,6 +163,21 @@ public class StateWinning implements State {
     public void setPathLength(int pathLength) {
         this.pathLength = pathLength;
     }
+
+	public void setWonGame(boolean wonGame) {
+		// TODO Auto-generated method stub
+		this.wonGame=wonGame;
+		
+		
+	}
+
+	public void setConsumptionEnergy(float energyConsumption) {
+		// TODO Auto-generated method stub
+		this.energyConsumption=energyConsumption;
+		
+	}
+
+	
 }
 
 

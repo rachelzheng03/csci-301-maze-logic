@@ -81,6 +81,21 @@ class WizardTest {
 		assertEquals(3228, robot.getBatteryLevel());
 		assertTrue(robot.canSeeThroughTheExitIntoEternity(Direction.FORWARD)); //subtract 1 from battery
 		assertEquals(0, robot.getOdometerReading());
+		
+		//test that robot stops when battery runs out
+		playingState.setCurrentPosition(0, 3);
+		robot.setBatteryLevel(16);
+		try {
+			wizard.drive2Exit();
+			fail("method should throw exception because not enough battery to get to the exit");
+		} catch (Exception e) {
+			// TODO: handle exception
+			assertEquals(2, robot.getCurrentPosition()[0]);
+			assertEquals(3, robot.getCurrentPosition()[1]);
+			assertTrue(robot.hasStopped());
+			assertTrue(e.getMessage()=="Robot has stopped");
+		}
+		
 	}
 	
 	@Test
@@ -117,8 +132,6 @@ class WizardTest {
 		assertEquals(3466, robot.getBatteryLevel());
 		assertTrue(robot.canSeeThroughTheExitIntoEternity(Direction.FORWARD)); //subtract 1 from battery
 		assertEquals(0, robot.getOdometerReading());
-		
-		
 	}
 	
 	@Test
