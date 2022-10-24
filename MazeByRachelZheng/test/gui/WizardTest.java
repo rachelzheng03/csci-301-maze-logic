@@ -13,6 +13,7 @@ import generation.DefaultOrder;
 import generation.Maze;
 import generation.MazeFactory;
 import gui.Robot.Direction;
+import gui.Robot.Turn;
 
 /**
  * @author rzhe2
@@ -59,26 +60,26 @@ class WizardTest {
 		//check battery
 		wizard.drive2Exit();
 		assertTrue(robot.isAtExit());
-		assertEquals(3364, robot.getBatteryLevel());
+		assertEquals(3394, robot.getBatteryLevel());
 		assertTrue(robot.canSeeThroughTheExitIntoEternity(Direction.FORWARD)); //subtract 1 from battery
 		assertEquals(13, robot.getOdometerReading());
 		
-		//start at position (2,2), battery is currently at 3363
+		//start at position (2,2), battery is currently at 3393
 		playingState.setCurrentPosition(2, 2);
-		assert(robot.getBatteryLevel()==3363);
+		assert(robot.getBatteryLevel()==3393);
 		robot.resetOdometer();
 		wizard.drive2Exit();
 		assertTrue(robot.isAtExit());
-		assertEquals(3230, robot.getBatteryLevel());
+		assertEquals(3296, robot.getBatteryLevel());
 		assertTrue(robot.canSeeThroughTheExitIntoEternity(Direction.FORWARD)); //subtract 1 from battery
 		assertEquals(12, robot.getOdometerReading());
 		
-		//facing exit, battery currently at 3229
-		assert(robot.getBatteryLevel()==3229);
+		//facing exit, battery currently at 3295
+		assert(robot.getBatteryLevel()==3295);
 		robot.resetOdometer();
 		wizard.drive2Exit();
 		assertTrue(robot.isAtExit());
-		assertEquals(3228, robot.getBatteryLevel());
+		assertEquals(3294, robot.getBatteryLevel());
 		assertTrue(robot.canSeeThroughTheExitIntoEternity(Direction.FORWARD)); //subtract 1 from battery
 		assertEquals(0, robot.getOdometerReading());
 		
@@ -108,36 +109,98 @@ class WizardTest {
 		assertEquals(0, robot.getCurrentPosition()[0]);
 		assertEquals(0, robot.getCurrentPosition()[1]);
 		assertEquals(CardinalDirection.North, robot.getCurrentDirection());
-		assertEquals(3485, robot.getBatteryLevel());
+		assertEquals(3491, robot.getBatteryLevel());
 		assertEquals(1, robot.getOdometerReading());
 		
 		playingState.setCurrentPosition(3, 0);
-		assert(robot.getBatteryLevel()==3485);
+		assert(robot.getBatteryLevel()==3491);
+		assert(robot.getCurrentDirection()==CardinalDirection.North);
 		robot.resetOdometer();
 		wizard.drive1Step2Exit();
 		assertEquals(2, robot.getCurrentPosition()[0]);
 		assertEquals(0, robot.getCurrentPosition()[1]);
 		assertEquals(CardinalDirection.West, robot.getCurrentDirection());
-		assertEquals(3470, robot.getBatteryLevel());
+		assertEquals(3482, robot.getBatteryLevel());
 		assertTrue(robot.isAtExit()); 
 		assertEquals(1, robot.getOdometerReading());
 		
-		assert(robot.getBatteryLevel()==3470);
+		//at exit, facing exit (North)
+		assert(robot.getBatteryLevel()==3482);
 		robot.resetOdometer();
 		wizard.drive1Step2Exit();
 		assertEquals(2, robot.getCurrentPosition()[0]);
 		assertEquals(0, robot.getCurrentPosition()[1]);
 		assertEquals(CardinalDirection.North, robot.getCurrentDirection());
 		assertTrue(robot.isAtExit());
-		assertEquals(3466, robot.getBatteryLevel());
+		assertEquals(3478, robot.getBatteryLevel());
 		assertTrue(robot.canSeeThroughTheExitIntoEternity(Direction.FORWARD)); //subtract 1 from battery
 		assertEquals(0, robot.getOdometerReading());
+		
+		//at west exit
+		order.setSeed(14);
+		factory.order(order);
+		factory.waitTillDelivered();
+		maze = order.getMaze();
+		robot=new ReliableRobot();
+		controller=new Control();
+		playingState=new StatePlaying();
+		playingState.setMaze(maze);
+		controller.setState(playingState);
+		playingState.start(controller, null); //dry-run for testing
+		robot.setController(controller);
+		robot.addDistanceSensor(robot.forwardSensor, Direction.FORWARD);
+    	robot.addDistanceSensor(robot.backwardSensor, Direction.BACKWARD);
+		robot.addDistanceSensor(robot.leftSensor, Direction.LEFT);
+		robot.addDistanceSensor(robot.rightSensor, Direction.RIGHT);
+		wizard=new Wizard();
+		wizard.setRobot(robot);
+		wizard.setMaze(maze);
+		playingState.setCurrentPosition(0, 0);
+		wizard.drive1Step2Exit();
+		assertEquals(0, robot.getCurrentPosition()[0]);
+		assertEquals(0, robot.getCurrentPosition()[1]);
+		assertEquals(CardinalDirection.West, robot.getCurrentDirection());
+		assertTrue(robot.isAtExit());
+		assertEquals(3493, robot.getBatteryLevel());
+		assertTrue(robot.canSeeThroughTheExitIntoEternity(Direction.FORWARD)); //subtract 1 from battery
+		assertEquals(0, robot.getOdometerReading());
+		
+		//at east exit
+		order.setSeed(-326469280);
+		factory.order(order);
+		factory.waitTillDelivered();
+		maze = order.getMaze();
+		robot=new ReliableRobot();
+		controller=new Control();
+		playingState=new StatePlaying();
+		playingState.setMaze(maze);
+		controller.setState(playingState);
+		playingState.start(controller, null); //dry-run for testing
+		robot.setController(controller);
+		robot.addDistanceSensor(robot.forwardSensor, Direction.FORWARD);
+    	robot.addDistanceSensor(robot.backwardSensor, Direction.BACKWARD);
+		robot.addDistanceSensor(robot.leftSensor, Direction.LEFT);
+		robot.addDistanceSensor(robot.rightSensor, Direction.RIGHT);
+		wizard=new Wizard();
+		wizard.setRobot(robot);
+		wizard.setMaze(maze);
+		robot.rotate(Turn.RIGHT); //cd: north
+		playingState.setCurrentPosition(3, 2);
+		assert(robot.getBatteryLevel()==3497);
+		wizard.drive1Step2Exit();
+		assertEquals(3, robot.getCurrentPosition()[0]);
+		assertEquals(2, robot.getCurrentPosition()[1]);
+		assertEquals(CardinalDirection.East, robot.getCurrentDirection());
+		assertTrue(robot.isAtExit());
+		assertEquals(3493, robot.getBatteryLevel());
+		assertTrue(robot.canSeeThroughTheExitIntoEternity(Direction.FORWARD)); //subtract 1 from battery
+		assertEquals(0, robot.getOdometerReading());	
 	}
 	
 	@Test
 	public void testGetEnergyConsumption() throws Exception {
 		wizard.drive2Exit();
-		assertEquals(136, wizard.getEnergyConsumption());
+		assertEquals(106, wizard.getEnergyConsumption());
 	}
 	
 	@Test

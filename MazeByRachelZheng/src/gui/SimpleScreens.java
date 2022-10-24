@@ -195,13 +195,22 @@ public class SimpleScreens {
 
 	final Font largeBannerFont = new Font("TimesRoman", Font.BOLD, 48);
 	final Font smallBannerFont = new Font("TimesRoman", Font.BOLD, 16);
+	
+	/**
+	 * Describes the path length, the number of steps, the player did
+	 * to get to the exit.
+	 */
 	private int pathLength;
+	
+	/**
+     * Describes the amount of energy the robot used to get from the starting position to the exit.
+     */
 	private float energyConsumption;
 
-	 /**
-     * Sets the path length.
-     * @param pathLength the number of steps the player did from starting to exit position
-     */
+	/**
+	 * Sets the path length.
+	 * @param pathLength the number of steps the player did from starting to exit position
+	 */
 	public void setPathLength(int pathLength) {
 		// TODO Auto-generated method stub
 		this.pathLength=pathLength;

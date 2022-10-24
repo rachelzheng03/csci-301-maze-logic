@@ -67,8 +67,14 @@ public class StateWinning implements State {
      */
     int pathLength;
     
+    /**
+     * Is true if the game was won. Is false if the game was lost.
+     */
     boolean wonGame;
 
+    /**
+     * Describes the amount of energy the robot used to get from the starting position to the exit.
+     */
 	private float energyConsumption;
     
     /**

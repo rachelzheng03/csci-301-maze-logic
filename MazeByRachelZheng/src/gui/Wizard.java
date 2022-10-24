@@ -61,7 +61,27 @@ public class Wizard implements RobotDriver {
 		// TODO Auto-generated method stub
 		if (reliableRobot.isAtExit()) {
 			while(!reliableRobot.canSeeThroughTheExitIntoEternity(Direction.FORWARD)) {
-				reliableRobot.rotate(Turn.LEFT);
+				if(reliableRobot.hasStopped())
+					throw new Exception("Robot has stopped");	
+				int[] position = reliableRobot.getCurrentPosition(); //current position of robot - should be the exit
+				//reliableRobot.rotate(Turn.LEFT);
+				//exit is on south side
+				if (!maze.isValidPosition(position[0], position[1]+1))	{
+					turnToSouth(reliableRobot.getCurrentDirection());
+				}
+				//exit is on east side
+				else if (!maze.isValidPosition(position[0]+1, position[1])){
+					turnToEast(reliableRobot.getCurrentDirection());
+				}
+				//exit is on west side
+
+				else if (!maze.isValidPosition(position[0]-1, position[1])){
+					turnToWest(reliableRobot.getCurrentDirection());
+				}
+				//exit is on north side
+				else if (!maze.isValidPosition(position[0], position[1]-1)){
+					turnToNorth(reliableRobot.getCurrentDirection());
+				}
 				if(reliableRobot.hasStopped())
 					throw new Exception("Robot has stopped");	
 			}
@@ -75,14 +95,16 @@ public class Wizard implements RobotDriver {
 		if (position[0]==destination[0]) {
 			if (position[1]>destination[1]) {
 				while(reliableRobot.getCurrentDirection()!=CardinalDirection.North) {
-					reliableRobot.rotate(Turn.LEFT);
+					//reliableRobot.rotate(Turn.LEFT);
+					turnToNorth(reliableRobot.getCurrentDirection());
 					if(reliableRobot.hasStopped())
 						throw new Exception("Robot has stopped");
 				}
 			}
 			else {
 				while(reliableRobot.getCurrentDirection()!=CardinalDirection.South) {
-					reliableRobot.rotate(Turn.LEFT);
+					//reliableRobot.rotate(Turn.LEFT);
+					turnToSouth(reliableRobot.getCurrentDirection());
 					if(reliableRobot.hasStopped())
 						throw new Exception("Robot has stopped");
 				}
@@ -91,14 +113,16 @@ public class Wizard implements RobotDriver {
 		else if (position[1]==destination[1]) {
 			if (position[0]>destination[0]) {
 				while(reliableRobot.getCurrentDirection()!=CardinalDirection.West) {
-					reliableRobot.rotate(Turn.LEFT);
+					//reliableRobot.rotate(Turn.LEFT);
+					turnToWest(reliableRobot.getCurrentDirection());
 					if(reliableRobot.hasStopped())
 						throw new Exception("Robot has stopped");
 				}
 			}
 			else {
 				while(reliableRobot.getCurrentDirection()!=CardinalDirection.East) {
-					reliableRobot.rotate(Turn.LEFT);
+					//reliableRobot.rotate(Turn.LEFT);
+					turnToEast(reliableRobot.getCurrentDirection());
 					if(reliableRobot.hasStopped())
 						throw new Exception("Robot has stopped");
 				}
@@ -108,6 +132,95 @@ public class Wizard implements RobotDriver {
 		if(reliableRobot.hasStopped())
 			throw new Exception("Robot has stopped");
 		return reliableRobot.getCurrentPosition()==destination;
+	}
+	
+	/**
+	 * rotates robot to the north using the least amount of 90 degree rotations
+	 * @param cd: current direction of robot
+	 */
+	private void turnToNorth(CardinalDirection cd) {
+		switch (cd) {
+		case North: //no need to rotate
+			return;
+		case South:
+			reliableRobot.rotate(Turn.AROUND);
+			break;
+		case East:
+			reliableRobot.rotate(Turn.RIGHT);
+			break;
+		case West:
+			reliableRobot.rotate(Turn.LEFT);
+			break;
+		default:
+			throw new IllegalArgumentException("Unexpected value: " + cd);
+		}
+		
+	}
+	
+	/**
+	 * rotates robot to the south using the least amount of 90 degree rotations
+	 * @param cd: current direction of robot
+	 */
+	private void turnToSouth(CardinalDirection cd) {
+		switch (cd) {
+		case North: 
+			reliableRobot.rotate(Turn.AROUND);
+			break;
+		case South: //no need to rotate
+			return;
+		case East:
+			reliableRobot.rotate(Turn.LEFT);
+			break;
+		case West:
+			reliableRobot.rotate(Turn.RIGHT);
+			break;
+		default:
+			throw new IllegalArgumentException("Unexpected value: " + cd);
+		}
+	}
+	
+	/**
+	 * rotates robot to the east using the least amount of 90 degree rotations
+	 * @param cd: current direction of robot
+	 */
+	private void turnToEast(CardinalDirection cd) {
+		switch (cd) {
+		case North: 
+			reliableRobot.rotate(Turn.LEFT);
+			break;
+		case South:
+			reliableRobot.rotate(Turn.RIGHT);
+			break;
+		case East: //no need to rotate
+			return;
+		case West:
+			reliableRobot.rotate(Turn.AROUND);
+			break;
+		default:
+			throw new IllegalArgumentException("Unexpected value: " + cd);
+		}
+	}
+	
+	/**
+	 * rotates robot to the west using the least amount of 90 degree rotations
+	 * @param cd: current direction of robot
+	 */
+	private void turnToWest(CardinalDirection cd) {
+		switch (cd) {
+		case North: 
+			reliableRobot.rotate(Turn.RIGHT);
+			break;
+		case South:
+			reliableRobot.rotate(Turn.LEFT);
+			break;
+		case East:
+			reliableRobot.rotate(Turn.AROUND);
+			break;
+		case West:
+			return; //no need to rotate
+		default:
+			throw new IllegalArgumentException("Unexpected value: " + cd);
+		}
 	}
 
 	@Override
