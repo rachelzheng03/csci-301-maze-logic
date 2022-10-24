@@ -8,6 +8,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import generation.CardinalDirection;
 import generation.DefaultOrder;
 import generation.Maze;
 import generation.MazeFactory;
@@ -51,29 +52,96 @@ class WizardTest {
 	}
 
 	@Test
-	public void testDrive2Exit() {
+	public void testDrive2Exit() throws Exception {
 		//check that robot is at exit
 		//check that robot is facing exit
 		//check odometer
 		//check battery
+		wizard.drive2Exit();
+		assertTrue(robot.isAtExit());
+		assertEquals(3364, robot.getBatteryLevel());
+		assertTrue(robot.canSeeThroughTheExitIntoEternity(Direction.FORWARD)); //subtract 1 from battery
+		assertEquals(13, robot.getOdometerReading());
+		
+		//start at position (2,2), battery is currently at 3363
+		playingState.setCurrentPosition(2, 2);
+		assert(robot.getBatteryLevel()==3363);
+		robot.resetOdometer();
+		wizard.drive2Exit();
+		assertTrue(robot.isAtExit());
+		assertEquals(3230, robot.getBatteryLevel());
+		assertTrue(robot.canSeeThroughTheExitIntoEternity(Direction.FORWARD)); //subtract 1 from battery
+		assertEquals(12, robot.getOdometerReading());
+		
+		//facing exit, battery currently at 3229
+		assert(robot.getBatteryLevel()==3229);
+		robot.resetOdometer();
+		wizard.drive2Exit();
+		assertTrue(robot.isAtExit());
+		assertEquals(3228, robot.getBatteryLevel());
+		assertTrue(robot.canSeeThroughTheExitIntoEternity(Direction.FORWARD)); //subtract 1 from battery
+		assertEquals(0, robot.getOdometerReading());
 	}
 	
 	@Test
-	public void testDrive1Step2Exit() {
+	public void testDrive1Step2Exit() throws Exception {
 		//start from various positions and direction and call drive1step2exitmethod
 		//check that position and direction after method is called is correct
 		//check odometer
 		//check battery
-	}
-	
-	@Test
-	public void testGetEnergyConsumption() {
+		wizard.drive1Step2Exit();
+		assertEquals(0, robot.getCurrentPosition()[0]);
+		assertEquals(0, robot.getCurrentPosition()[1]);
+		assertEquals(CardinalDirection.North, robot.getCurrentDirection());
+		assertEquals(3485, robot.getBatteryLevel());
+		assertEquals(1, robot.getOdometerReading());
+		
+		playingState.setCurrentPosition(3, 0);
+		assert(robot.getBatteryLevel()==3485);
+		robot.resetOdometer();
+		wizard.drive1Step2Exit();
+		assertEquals(2, robot.getCurrentPosition()[0]);
+		assertEquals(0, robot.getCurrentPosition()[1]);
+		assertEquals(CardinalDirection.West, robot.getCurrentDirection());
+		assertEquals(3470, robot.getBatteryLevel());
+		assertTrue(robot.isAtExit()); 
+		assertEquals(1, robot.getOdometerReading());
+		
+		assert(robot.getBatteryLevel()==3470);
+		robot.resetOdometer();
+		wizard.drive1Step2Exit();
+		assertEquals(2, robot.getCurrentPosition()[0]);
+		assertEquals(0, robot.getCurrentPosition()[1]);
+		assertEquals(CardinalDirection.North, robot.getCurrentDirection());
+		assertTrue(robot.isAtExit());
+		assertEquals(3466, robot.getBatteryLevel());
+		assertTrue(robot.canSeeThroughTheExitIntoEternity(Direction.FORWARD)); //subtract 1 from battery
+		assertEquals(0, robot.getOdometerReading());
+		
 		
 	}
 	
 	@Test
-	public void testGetPathLength() {
+	public void testGetEnergyConsumption() throws Exception {
+		wizard.drive2Exit();
+		assertEquals(136, wizard.getEnergyConsumption());
+	}
+	
+	@Test
+	public void testGetPathLength() throws Exception {
 		//test method after various steps to exit
+		wizard.drive1Step2Exit();
+		assertEquals(1, wizard.getPathLength());
+		wizard.drive1Step2Exit();
+		assertEquals(2, wizard.getPathLength());
+		wizard.drive1Step2Exit();
+		assertEquals(3, wizard.getPathLength());
+		wizard.drive1Step2Exit();
+		assertEquals(4, wizard.getPathLength());
+		wizard.drive1Step2Exit();
+		assertEquals(5, wizard.getPathLength());
+		wizard.drive2Exit();
+		assertEquals(13, wizard.getPathLength());
 	}
 
 }
