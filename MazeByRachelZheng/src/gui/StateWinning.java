@@ -164,17 +164,22 @@ public class StateWinning implements State {
         this.pathLength = pathLength;
     }
 
+    /**
+     * Sets whether game has been won.
+     * @param wonGame: true if player/driver won the game and false if player/driver lost
+     */
 	public void setWonGame(boolean wonGame) {
 		// TODO Auto-generated method stub
 		this.wonGame=wonGame;
-		
-		
 	}
 
+	/**
+     * Sets energy consumption.
+     * @param energyConsumption: the amount of energy used from start to end of the game
+     */
 	public void setConsumptionEnergy(float energyConsumption) {
 		// TODO Auto-generated method stub
 		this.energyConsumption=energyConsumption;
-		
 	}
 
 	

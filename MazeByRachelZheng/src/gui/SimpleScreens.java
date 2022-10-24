@@ -147,6 +147,8 @@ public class SimpleScreens {
 			// write some extra blurb
 			updateFontAndColor(gc, smallBannerFont, MazeColors.TITLE_SMALL);
 			centerString(gc, "Robot has crashed or ran out of battery.", 160);
+			centerString(gc, "Path Length: " + pathLength, 200);
+			centerString(gc, "Energy Consumption: " + energyConsumption, 240);
 			// write the instructions
 			gc.setColor(ColorTheme.getColor(MazeColors.TITLE_DEFAULT));
 			centerString(gc, "Hit any key to restart", 300);
@@ -196,10 +198,19 @@ public class SimpleScreens {
 	private int pathLength;
 	private float energyConsumption;
 
+	 /**
+     * Sets the path length.
+     * @param pathLength the number of steps the player did from starting to exit position
+     */
 	public void setPathLength(int pathLength) {
 		// TODO Auto-generated method stub
 		this.pathLength=pathLength;
 	}
+	
+	/**
+     * Sets energy consumption.
+     * @param energyConsumption: the amount of energy used from start to end of the game
+     */
 	public void setEnergyConsumption(float energyConsumption) {
 		// TODO Auto-generated method stub
 		this.energyConsumption=energyConsumption;
