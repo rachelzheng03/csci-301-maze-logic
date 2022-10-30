@@ -317,7 +317,7 @@ public class ReliableRobot implements Robot {
 	public void resetHasStopped(boolean stopped) {
 		hasStopped=stopped;
 	}
-
+	
 	@Override
 	public int distanceToObstacle(Direction direction) throws UnsupportedOperationException {
 		// TODO Auto-generated method stub

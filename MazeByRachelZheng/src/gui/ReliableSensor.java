@@ -22,11 +22,13 @@ public class ReliableSensor implements DistanceSensor {
 	private static final float ENERGY_CONSUMPTION_SENSING=1; //how much energy it takes to sense in one direction 
 	protected Maze maze;
 	protected Direction mountedDirection; //direction of sensor relative to the robot
+	private boolean operational;
 	
 	//constructor
 	public ReliableSensor() {
 		maze=null;
 		mountedDirection=null;
+		operational=true;
 	}
 	
 	@Override

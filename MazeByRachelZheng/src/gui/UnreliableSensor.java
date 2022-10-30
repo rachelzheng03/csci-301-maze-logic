@@ -3,6 +3,8 @@
  */
 package gui;
 
+import static org.junit.Assert.assertTrue;
+
 /**
  * Responsibilities:
  * 1)Calculate distance to a wallboard based on direction of sensor. 
@@ -14,6 +16,69 @@ package gui;
  * @author Rachel Zheng
  *
  */
-public class UnreliableSensor extends ReliableSensor implements DistanceSensor {
+public class UnreliableSensor extends ReliableSensor implements Runnable {
+	
+	private boolean operational; //is true if the sensor is in an operational state. is false if sensor is in a failed state
+	private boolean hasStopped; 
+	private int meanTimeBetweenFailures;
+	private int meanTimeToRepair;
+	private Thread operationalState;
+	private boolean startedFRP; // is true if startFailureAndRepairProcess has been called. is false otherwise
+	
+	public UnreliableSensor() {
+		maze=null;
+		mountedDirection=null;
+		operational=true;
+		hasStopped=false;
+	}
+	
+	public void run() {
+		System.out.println("starting thread");
+		try {
+			while(true){
+				Thread.sleep(meanTimeBetweenFailures*1000);
+				//fail sensor
+				operational=false;
+				System.out.println(operational);
+				Thread.sleep(meanTimeToRepair*1000);
+				//sensor repaired
+				operational=true;
+				System.out.println(operational);
+			}
+		} catch (InterruptedException e) {
+			// TODO: handle exception
+			e.printStackTrace();
+		}
+	}
+	
+	public void startFailureAndRepairProcess(int meanTimeBetweenFailures, int meanTimeToRepair)
+			throws UnsupportedOperationException {
+		// TODO Auto-generated method stub
+		this.meanTimeBetweenFailures=meanTimeBetweenFailures;
+		this.meanTimeToRepair=meanTimeToRepair;
+		startedFRP=true;
+		operationalState = new Thread(this);
+		operationalState.start();
+	}
+
+	public void stopFailureAndRepairProcess() throws UnsupportedOperationException {
+		// TODO Auto-generated method stub
+		//return an UnsupportedOperationException if called with no running failure and repair process
+		if(!startedFRP)
+			throw new UnsupportedOperationException("Failure and repair process has not been started. There is nothing to stop.");
+		//stop thread
+		while (!hasStopped) {
+			if (operational) {
+				System.out.println("start stop");
+				operationalState.interrupt();
+				hasStopped=true;
+			}
+		}
+
+	}
+	
+	public boolean getOperational() {
+		return operational;
+	}
 
 }

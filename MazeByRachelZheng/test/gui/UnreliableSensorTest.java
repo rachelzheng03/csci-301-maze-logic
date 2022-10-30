@@ -16,34 +16,33 @@ import gui.Robot.Direction;
 
 /**
  * @author rzhe2
+ *
  */
-class ReliableSensorTest {
+class UnreliableSensorTest{
 
-	protected ReliableSensor forwardSensor;
-	protected ReliableSensor backwardSensor;
-	protected ReliableSensor leftSensor;
-	protected ReliableSensor rightSensor;
+	protected UnreliableSensor forwardSensor;
+	protected UnreliableSensor backwardSensor;
+	protected UnreliableSensor leftSensor;
+	protected UnreliableSensor rightSensor;
 	private DefaultOrder order;
 	private MazeFactory factory;
 	private Maze maze;
-
-	
 	/**
 	 * @throws java.lang.Exception
 	 */
 	@BeforeEach
 	public void setUp() throws Exception {
-		forwardSensor=new ReliableSensor(); //forward sensor
-		backwardSensor=new ReliableSensor(); //backward sensor
-		leftSensor=new ReliableSensor(); //left sensor
-		rightSensor=new ReliableSensor(); //right sensor
+		forwardSensor=new UnreliableSensor(); //forward sensor
+		backwardSensor=new UnreliableSensor(); //backward sensor
+		leftSensor=new UnreliableSensor(); //left sensor
+		rightSensor=new UnreliableSensor(); //right sensor
 		order = new DefaultOrder(); //(4x4)
 		factory=new MazeFactory();
 		factory.order(order);
 		factory.waitTillDelivered();
 		maze = order.getMaze();
 	}
-	
+
 	/**
 	 * Tests if setUp created objects. Correct if not null.
 	 */
@@ -58,53 +57,11 @@ class ReliableSensorTest {
 		assertNotNull(rightSensor);
 	}
 	
-	/**
-	 * Test that setMaze, sets the maze for reliable sensor to the one passed in the parameter. The test should also check that
-	 * setMaze throws an IllegalArgumentError if parameter is null.
-	 */
-	@Test
-	public void testSetMaze() {
-		try {
-			forwardSensor.setMaze(null);
-			fail("should throw IllegalArgumentException because parameter is null");
-		} catch (Exception e) {
-			// TODO: handle exception
-			assertTrue(e instanceof IllegalArgumentException);
-		}
-		forwardSensor.setMaze(maze);
-		assertEquals(forwardSensor.maze, maze);
-	}
-
-	/**
-	 * Test that setSensorDirection, sets the mounted direction for reliable sensor to the one passed in the parameter. The test should also check that
-	 * setSensorDirection throws an IllegalArgumentError if parameter is null.
-	 */
-	@Test
-	public void testSetSensorDirection() {
-		try {
-			forwardSensor.setSensorDirection(null);
-			fail("should throw IllegalArgumentException because parameter is null");
-		} catch (Exception e) {
-			// TODO: handle exception
-			assertTrue(e instanceof IllegalArgumentException);
-		}
-		forwardSensor.setSensorDirection(Direction.FORWARD);
-		assertEquals(Direction.FORWARD, forwardSensor.mountedDirection);
-		forwardSensor.setSensorDirection(Direction.BACKWARD);
-		assertEquals(Direction.BACKWARD, forwardSensor.mountedDirection);
-		forwardSensor.setSensorDirection(Direction.LEFT);
-		assertEquals(Direction.LEFT, forwardSensor.mountedDirection);
-		forwardSensor.setSensorDirection(Direction.RIGHT);
-		assertEquals(Direction.RIGHT, forwardSensor.mountedDirection);
-	}
-	
 	@Test
 	public void testDistanceToObject() {
 		float[] power = {3500};
 		int[] position = {1,2};
 		float[] powerFail = {0};
-		
-		
 
 		forwardSensor.setSensorDirection(Direction.FORWARD);
 		backwardSensor.setSensorDirection(Direction.BACKWARD);
@@ -198,8 +155,7 @@ class ReliableSensorTest {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			fail();
-		}
-		
+		}	
 	}
 	
 	@Test
@@ -211,32 +167,46 @@ class ReliableSensorTest {
 		assertEquals(1, rightSensor.getEnergyConsumptionForSensing());
 	}
 	
+	
 	@Test
 	public void testStartFailureAndRepairProcess() {
-		//test that method throws Unsupported Operation Error
+		forwardSensor.setSensorDirection(Direction.FORWARD);
+		forwardSensor.setMaze(maze);
+		forwardSensor.startFailureAndRepairProcess(4, 2);
 		try {
-			forwardSensor.startFailureAndRepairProcess(0, 0);
-			fail();
-		} catch (Exception e) {
-			// TODO: handle exception
-			assertTrue(e instanceof UnsupportedOperationException);
-			assertTrue(e.getMessage()=="method not implemented for reliable sensor");
-			
+			Thread.sleep(5000);
+		} catch (InterruptedException e) {
 		}
+		assertFalse(forwardSensor.getOperational());
+		try {
+			Thread.sleep(2000);
+		} catch (InterruptedException e) {
+		}
+		assertTrue(forwardSensor.getOperational());
 	}
 	
 	@Test
 	public void testStopFailureAndRepairProcess() {
-		//test that method throws Unsupported Operation Error
+		forwardSensor.setSensorDirection(Direction.FORWARD);
+		forwardSensor.setMaze(maze);
 		try {
 			forwardSensor.stopFailureAndRepairProcess();
-			fail();
+			fail("no failure and repair process has been started");
 		} catch (Exception e) {
 			// TODO: handle exception
 			assertTrue(e instanceof UnsupportedOperationException);
-			assertTrue(e.getMessage()=="method not implemented for reliable sensor");
+			assertTrue(e.getMessage().equals("Failure and repair process has not been started. There is nothing to stop."));
 		}
-
+		forwardSensor.startFailureAndRepairProcess(4, 2);
+		try {
+			Thread.sleep(5000);
+		} catch (InterruptedException e) {
+		}
+		assertFalse(forwardSensor.getOperational());
+		forwardSensor.stopFailureAndRepairProcess();
+		//sensor should end in an operational state
+		assertTrue(forwardSensor.getOperational());
+		
 	}
 
 }
