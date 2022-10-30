@@ -282,5 +282,9 @@ public class ReliableSensor implements DistanceSensor {
 		throw new UnsupportedOperationException("method not implemented for reliable sensor");
 
 	}
+	
+	public boolean getOperational() {
+		return operational;
+	}
 
 }

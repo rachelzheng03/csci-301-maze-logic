@@ -19,10 +19,10 @@ import gui.Robot.Direction;
  */
 class ReliableSensorTest {
 
-	protected ReliableSensor forwardSensor;
-	protected ReliableSensor backwardSensor;
-	protected ReliableSensor leftSensor;
-	protected ReliableSensor rightSensor;
+	private ReliableSensor forwardSensor;
+	private ReliableSensor backwardSensor;
+	private ReliableSensor leftSensor;
+	private ReliableSensor rightSensor;
 	private DefaultOrder order;
 	private MazeFactory factory;
 	private Maze maze;
