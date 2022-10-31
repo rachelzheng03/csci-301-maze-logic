@@ -96,15 +96,86 @@ public class WallFollower implements RobotDriver {
 			 	//move forward 1
 			 	//stop
 			//Else:
-		 		//turn right 	
+		 		//turn right 
+		int steps=-1; //set to impossible value
 		if (robot.isAtExit())
 			return false;
-		if (robot.distanceToObstacle(Direction.LEFT)>0) {
-			robot.rotate(Turn.LEFT);
-			robot.move(1);
-			return true;
+		CardinalDirection oldCD = robot.getCurrentDirection();
+		try {
+			steps = robot.distanceToObstacle(Direction.LEFT);
+		//find another sensor that is operational to find the distance to obstacle in the original direction
+		}catch (Exception e) {
+			// TODO: handle exception
+			if(e instanceof UnsupportedOperationException && e.getMessage()==("sensor not operational")) {
+				try {
+					robot.rotate(Turn.LEFT);
+					steps = robot.distanceToObstacle(Direction.FORWARD);
+				} catch (Exception e2) {
+					// TODO: handle exception
+					if(e2 instanceof UnsupportedOperationException && e2.getMessage()==("sensor not operational")) {
+						try {
+							robot.rotate(Turn.RIGHT);
+							steps=robot.distanceToObstacle(Direction.RIGHT);
+						} catch (Exception e3) {
+							// TODO: handle exception
+							if(e3 instanceof UnsupportedOperationException && e3.getMessage()==("sensor not operational"))
+								robot.rotate(Turn.RIGHT);
+							steps=robot.distanceToObstacle(Direction.BACKWARD);
+						}
+					}
+					else {
+						e.printStackTrace();
+					}
+						
+				}
+			}
+			else {
+				e.printStackTrace();
+			}
 		}
-		if (robot.distanceToObstacle(Direction.FORWARD)>0) {
+		CardinalDirection newCD = robot.getCurrentDirection();
+		rotateBack(oldCD, newCD);
+		if (steps>0) {
+		robot.rotate(Turn.LEFT);
+		robot.move(1);
+		return true;
+		}
+		oldCD=robot.getCurrentDirection();
+		try {
+			steps = robot.distanceToObstacle(Direction.FORWARD);
+		//find another sensor that is operational to find the distance to obstacle in the original direction
+		}catch (Exception e) {
+			// TODO: handle exception
+			if(e instanceof UnsupportedOperationException && e.getMessage()==("sensor not operational")) {
+				try {
+					robot.rotate(Turn.LEFT);
+					steps = robot.distanceToObstacle(Direction.RIGHT);
+				} catch (Exception e2) {
+					// TODO: handle exception
+					if(e2 instanceof UnsupportedOperationException && e2.getMessage()==("sensor not operational")) {
+						try {
+							robot.rotate(Turn.RIGHT);
+							steps=robot.distanceToObstacle(Direction.BACKWARD);
+						} catch (Exception e3) {
+							// TODO: handle exception
+							if(e3 instanceof UnsupportedOperationException && e3.getMessage()==("sensor not operational"))
+								robot.rotate(Turn.RIGHT);
+							steps=robot.distanceToObstacle(Direction.LEFT);
+						}
+					}
+					else {
+						e.printStackTrace();
+					}
+						
+				}
+			}
+			else {
+				e.printStackTrace();
+			}
+		}
+		newCD=robot.getCurrentDirection();
+		rotateBack(oldCD, newCD);
+		if (steps>0) {
 			robot.move(1);
 			return true;
 		}
@@ -114,6 +185,31 @@ public class WallFollower implements RobotDriver {
 		return false;
 	}
 	
+	/**
+	 * rotates from newCd to oldCd
+	 * @param oldCD desired cardinal direction of robot
+	 * @param newCD current cardinal direction of robot
+	 */
+	private void rotateBack(CardinalDirection oldCD, CardinalDirection newCD) {
+		// TODO Auto-generated method stub
+		switch (oldCD) {
+		case North: 
+			turnToNorth(newCD);
+			break;
+		case East:
+			turnToEast(newCD);
+			break;
+		case West:
+			turnToWest(newCD);
+			break;
+		case South:
+			turnToSouth(newCD);
+			break;
+		default:
+			throw new IllegalArgumentException("Unexpected value: " + oldCD);
+		}
+	}
+
 	/**
 	 * rotates robot to the north using the least amount of 90 degree rotations
 	 * @param cd: current direction of robot
