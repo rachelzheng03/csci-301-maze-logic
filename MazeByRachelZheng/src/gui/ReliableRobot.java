@@ -3,6 +3,8 @@
  */
 package gui;
 
+import static org.junit.jupiter.api.Assertions.assertAll;
+
 import generation.CardinalDirection;
 import gui.Constants.UserInput;
 
@@ -20,16 +22,16 @@ import gui.Constants.UserInput;
  */
 public class ReliableRobot implements Robot {
 	
-	private Control controller;
-	private float batteryLevel;
+	protected Control controller;
+	protected float batteryLevel;
 	private final static float ENERGY_FOR_FULL_ROTATION=12;
 	private final static float ENERGY_FOR_STEP_FORWARD=6;
-	private int odometer; //distance traveled
-	protected ReliableSensor forwardSensor;
-	protected ReliableSensor backwardSensor;
-	protected ReliableSensor leftSensor;
-	protected ReliableSensor rightSensor;
-	private boolean hasStopped;
+	protected int odometer; //distance traveled
+	protected DistanceSensor forwardSensor;
+	protected DistanceSensor backwardSensor;
+	protected DistanceSensor leftSensor;
+	protected DistanceSensor rightSensor;
+	protected boolean hasStopped;
 	
 	//constructor 
 	public ReliableRobot() {
@@ -55,7 +57,24 @@ public class ReliableRobot implements Robot {
 		// TODO Auto-generated method stub
 		//set sensor's mounted direction
 		sensor.setSensorDirection(mountedDirection);
+		assert(controller.getMaze()!=null);
 		sensor.setMaze(controller.getMaze());
+		switch (mountedDirection) {
+		case FORWARD: 
+			forwardSensor=sensor;
+			break;
+		case LEFT:
+			leftSensor=sensor;
+			break;
+		case RIGHT:
+			rightSensor=sensor;
+			break;
+		case BACKWARD:
+			backwardSensor=sensor;
+			break;
+		default:
+			throw new IllegalArgumentException("Unexpected value: " + mountedDirection);
+		}
 	}
 
 	@Override
@@ -330,6 +349,8 @@ public class ReliableRobot implements Robot {
 				return steps;
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
+				if(e.getMessage()=="Sensor Failure: sensor not operational" && forwardSensor!=null)
+					throw new UnsupportedOperationException("sensor not operational");
 				e.printStackTrace();
 			}
 			break;
@@ -340,6 +361,8 @@ public class ReliableRobot implements Robot {
 				return steps;
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
+				if(e.getMessage()=="Sensor Failure: sensor not operational" && backwardSensor!=null)
+					throw new UnsupportedOperationException("sensor not operational");
 				e.printStackTrace();
 			}
 			break;
@@ -350,6 +373,8 @@ public class ReliableRobot implements Robot {
 				return steps;
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
+				if(e.getMessage()=="Sensor Failure: sensor not operational" && leftSensor!=null)
+					throw new UnsupportedOperationException("sensor not operational");
 				e.printStackTrace();
 			}
 			break;
@@ -360,6 +385,8 @@ public class ReliableRobot implements Robot {
 				return steps;			
 				} catch (Exception e) {
 				// TODO Auto-generated catch block
+					if(e.getMessage()=="Sensor Failure: sensor not operational" && rightSensor!=null)
+						throw new UnsupportedOperationException("sensor not operational");
 				e.printStackTrace();
 			}
 			break;

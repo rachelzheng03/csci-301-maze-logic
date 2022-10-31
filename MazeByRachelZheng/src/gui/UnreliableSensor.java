@@ -5,6 +5,8 @@ package gui;
 
 import static org.junit.Assert.assertTrue;
 
+import generation.CardinalDirection;
+
 /**
  * Responsibilities:
  * 1)Calculate distance to a wallboard based on direction of sensor. 
@@ -30,6 +32,13 @@ public class UnreliableSensor extends ReliableSensor implements Runnable {
 		mountedDirection=null;
 		operational=true;
 		hasStopped=false;
+	}
+	
+	public int distanceToObstacle(int[] currentPosition, CardinalDirection currentDirection, float[] powersupply)
+			throws Exception {
+		if(!operational)
+			throw new Error("Sensor Failure: sensor not operational");
+		return super.distanceToObstacle(currentPosition, currentDirection, powersupply);
 	}
 	
 	public void run() {

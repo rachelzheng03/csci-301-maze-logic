@@ -3,6 +3,8 @@ package gui;
 import gui.Constants.UserInput;
 import gui.Robot.Direction;
 
+import static org.junit.jupiter.api.Assertions.assertAll;
+
 import java.util.logging.Logger;
 
 import generation.CardinalDirection;
@@ -183,23 +185,38 @@ public class StatePlaying implements State {
         	printWarning();
         }
         if (control.getRobot()!=null&&control.getDriver()!=null) {
-        	ReliableRobot robot = (ReliableRobot) control.getRobot();
+        	Robot robot = control.getRobot();
         	robot.setController(control);
-        	robot.addDistanceSensor(robot.forwardSensor, Direction.FORWARD);
-        	robot.addDistanceSensor(robot.backwardSensor, Direction.BACKWARD);
-    		robot.addDistanceSensor(robot.leftSensor, Direction.LEFT);
-    		robot.addDistanceSensor(robot.rightSensor, Direction.RIGHT);
-        	RobotDriver wizard = control.getDriver();
-        	wizard.setRobot(control.getRobot());
-        	wizard.setMaze(maze);
+        	//System.out.println(control.sensorParameter);
+        	//dafault -r(1111):
+        	if(control.sensorParameter.equals("1111")) {
+        		ReliableSensor forwardReliableSensor=new ReliableSensor();
+        		ReliableSensor leftReliableSensor=new ReliableSensor();
+        		ReliableSensor rightReliableSensor=new ReliableSensor();
+        		ReliableSensor backwardReliableSensor=new ReliableSensor();
+        		robot.addDistanceSensor(forwardReliableSensor, Direction.FORWARD);
+        		robot.addDistanceSensor(backwardReliableSensor, Direction.BACKWARD);
+        		robot.addDistanceSensor(leftReliableSensor, Direction.LEFT);
+        		robot.addDistanceSensor(rightReliableSensor, Direction.RIGHT);
+        	}
+        	else {
+        		control.handleReliableOrUnreliableParameter(control.sensorParameter);
+        	}
+        	//set control for robot
+        	RobotDriver driver = control.getDriver();
+        	//set robot for robot driver
+        	driver.setRobot(control.getRobot());
+        	//set maze for robot driver
+        	driver.setMaze(maze);
+        	
         	try {
-//        		wizard.drive2Exit();
-				if(wizard.drive2Exit())
+//        		driver.drive2Exit();
+				if(driver.drive2Exit())
 					robot.move(1);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-				switchFromPlayingToWinning(wizard.getPathLength(), false);
+				switchFromPlayingToWinning(driver.getPathLength(), false);
 			}
         }
     }

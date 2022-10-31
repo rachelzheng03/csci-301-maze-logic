@@ -156,6 +156,20 @@ class UnreliableSensorTest{
 			e.printStackTrace();
 			fail();
 		}	
+		
+		//test for sensor failure
+		try {
+			forwardSensor.startFailureAndRepairProcess(4, 2);
+			try {
+				Thread.sleep(5000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
+			assertEquals("Sensor Failure: sensor not operational", e.getMessage());
+		}
 	}
 	
 	@Test

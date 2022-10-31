@@ -1,5 +1,7 @@
 package gui;
 
+import static org.junit.jupiter.api.Assertions.assertAll;
+
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.File;
@@ -13,6 +15,7 @@ import generation.*;
 
 import gui.ColorTheme.ColorThemeSelection;
 import gui.Constants.UserInput;
+import gui.Robot.Direction;
 
 /**
  * Class handles the user interaction through the different stages of the game.
@@ -209,6 +212,8 @@ public class Control extends JFrame implements KeyListener {
      * The driver that interacts with the robot starting from P3
      */
     RobotDriver driver;
+
+	String sensorParameter;
     
     /**
      * Sets the robot and robot driver
@@ -289,34 +294,115 @@ public class Control extends JFrame implements KeyListener {
 	    	return;
 	    }
 	    
-	    // command line input can specify the builder algorithm to use
-	    // or a filename to load an already computed maze from
-	    
-	    // possible builder algorithms are  (Prim, Kruskal, Eller, Boruvka)
-	    
-	    // command line input only applies to the first round of the game
-	    // so we can directly apply it to the currentState 
+	    for(int i=0; i<args.length; i++) {
+	    	//if -g then call method to handle the generation algorithm parameter
+			if ("-g".equals(args[i])) {
+				handleGenerationAlgorithmParameter(args[i+1]);
+			}
+	    	//if -g then call method to handle the driver parameter
+			if ("-d".equals(args[i])) {
+				handleDriverParameter(args[i+1]);
+			}
+	    	//if -r then call method to handle the unreliable/reliable sensor parameter
+			if ("-r".equals(args[i])) {
+				if (args[i+1].equals("1111")){
+					ReliableRobot reliableRobot=new ReliableRobot();
+					setRobotAndDriver(reliableRobot, driver);
+				}
+				else {
+					UnreliableRobot unreliableRobot=new UnreliableRobot();
+					setRobotAndDriver(unreliableRobot, driver);
+				}
+				sensorParameter=args[i+1];
+			}
+	    }
+	}
+	
+	/**
+	 * Handles the parameter corresponding to what type of sensors (unreliable or reliable) the robot has (-r)
+	 * @param parameter
+	 */
+	protected void handleReliableOrUnreliableParameter(String parameter) {
+		// TODO Auto-generated method stub
+		System.out.println(parameter);
+		String msg = "Handling command line input: " + parameter; // message for feedback
+		//set robot to unreliable robot. this method should only be called when at least 1 sensor is unreliable
 		
-	    String parameter = args[0];
-	    String msg = "Error in handling command line input: " + parameter; // message for feedback
+		//forward sensor is unreliable
+	    if (parameter.charAt(0)=='0') {
+	    	UnreliableSensor frontUnreliableSensor = new UnreliableSensor();
+	    	//add front unreliable sensor to unreliable robot
+	    	getRobot().addDistanceSensor(frontUnreliableSensor, Direction.FORWARD);
+	    }
+	    //left sensor is unreliable
+	    if (parameter.charAt(1)=='0') {
+	    	UnreliableSensor leftUnreliableSensor = new UnreliableSensor();
+	    	//add left unreliable sensor to unreliable robot
+	    	getRobot().addDistanceSensor(leftUnreliableSensor, Direction.LEFT);
+	    	
+	    }
+	    //right sensor is unreliable
+	    if (parameter.charAt(2)=='0') {
+	    	UnreliableSensor rightUnreliableSensor = new UnreliableSensor();
+	    	//add right unreliable sensor to unreliable robot
+	    	getRobot().addDistanceSensor(rightUnreliableSensor, Direction.RIGHT);
+	    }
+	    //back sensor is unreliable
+	    if (parameter.charAt(3)=='0') {
+	    	UnreliableSensor backUnreliableSensor = new UnreliableSensor();
+	    	//add back unreliable sensor to unreliable robot
+	    	getRobot().addDistanceSensor(backUnreliableSensor, Direction.BACKWARD);
+	    }
+	    LOGGER.fine(msg);	
+	}
+	
+	/**
+	 * Handles the parameter related to the driver of the maze (-d)
+	 * @param parameter
+	 */
+	private void handleDriverParameter(String parameter) {
+		// TODO Auto-generated method stub
+		System.out.println(parameter);
+		String msg = "Error in handling command line input: " + parameter; // message for feedback
+	    switch (parameter) {
+	    case "Wizard":
+	    	RobotDriver driver = new Wizard();
+	    	setRobotAndDriver(robot, driver);
+	    	msg = "Command line input detected: robot driver set to Wizard object";
+	        break;
+	    case "Wallfollower":
+	    	msg = "Command line input detected: robot driver set to Wallfollower object";
+	    	RobotDriver driver2 = new WallFollower();
+	    	setRobotAndDriver(robot, driver2);
+	        break;
+	    case "Manual":
+	    	msg = "Command line input detected: no driver, robot manually controlled";
+	        break;
+	    }
+	    LOGGER.fine(msg);	
+	}
+	
+	/**
+	 * Handles the parameter for choosing the maze generation algorithm (-g)
+	 * @param parameter
+	 */
+	private void handleGenerationAlgorithmParameter(String parameter) {
+		// TODO Auto-generated method stub
+		System.out.println(parameter);
+		String msg = "Error in handling command line input: " + parameter; // message for feedback
 	    switch (parameter) {
 	    case "Prim" :
 	    	msg = "Command line input detected: generating random maze with Prim's algorithm.";
 	        ((StateTitle)currentState).setBuilder(Order.Builder.Prim);
 	    	break;
-	    case "Kruskal":
-	    case "Eller":
 	    case "Boruvka":
 	    	// TODO: for P2 assignment, please add code to set the builder accordingly
 	    	msg = "Command line input detected: generating random maze with Boruvka's algorithm.";
 	        ((StateTitle)currentState).setBuilder(Order.Builder.Boruvka);
 	        break;
 	    	//throw new RuntimeException("Don't know anybody named " + parameter);
-	    case "Wizard":
-	    	Robot robot = new ReliableRobot();
-	    	RobotDriver driver = new Wizard();
-	    	setRobotAndDriver(robot, driver);
-	    	msg = "Command line input detected: robot driver set to Wizard object";
+	    case "DFS":
+	    	msg = "Command line input detected: generating random maze with DFS algorithm";
 	        break;
 	    default: // assume this is a filename
 	    	File f = new File(parameter) ;
@@ -331,9 +417,10 @@ public class Control extends JFrame implements KeyListener {
 	        }
 	    	break;
 	    }
-	    
-	    LOGGER.fine(msg);
+	    LOGGER.fine(msg);		
 	}
+	
+	
 	/**
      * Method incorporates all reactions to keyboard input in original code. 
      * The key listener calls this method to communicate input.
