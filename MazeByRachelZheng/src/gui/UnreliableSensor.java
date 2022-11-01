@@ -58,6 +58,8 @@ public class UnreliableSensor extends ReliableSensor implements Runnable {
 		} catch (InterruptedException e) {
 			// TODO: handle exception
 			//e.printStackTrace();
+			System.out.println("interrupted "+mountedDirection);
+
 			operationalState=null;
 			return;
 		}
@@ -79,15 +81,16 @@ public class UnreliableSensor extends ReliableSensor implements Runnable {
 		if(!startedFRP)
 			throw new UnsupportedOperationException("Failure and repair process has not been started. There is nothing to stop.");
 		//stop thread
-		while (!hasStopped) {
-			if (operational) {
-				System.out.println("start stop" + mountedDirection);
+		//while (!hasStopped) {
+			//if (operational) {
+				//System.out.println("start stop" + mountedDirection);
 				operationalState.interrupt();
+				operational=true;
 				hasStopped=true;
 			}
-		}
-
-	}
+//		}
+//
+//	}
 	
 	public boolean getOperational() {
 		return operational;

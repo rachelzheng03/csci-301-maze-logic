@@ -24,16 +24,32 @@ import gui.Robot.Direction;
  */
 public class UnreliableRobot extends ReliableRobot{
 	
-	public UnreliableRobot() {
+	public UnreliableRobot(String parameter) {
 		// TODO Auto-generated constructor stub
-		forwardSensor=null;
-		backwardSensor=null;
-		leftSensor=null;
-		rightSensor=null;
+		forwardSensor=new ReliableSensor();
+		backwardSensor=new ReliableSensor();
+		leftSensor=new ReliableSensor();
+		rightSensor=new ReliableSensor();
 		hasStopped=false;
 		controller=null;
 		odometer=0;
 		batteryLevel=3500;
+		
+	    if (parameter.charAt(0)=='0') {
+	    	forwardSensor = new UnreliableSensor();
+	    }
+	    if (parameter.charAt(1)=='0') {
+	    	leftSensor = new UnreliableSensor();
+	    	
+	    }
+	    //right sensor is unreliable
+	    if (parameter.charAt(2)=='0') {
+	    	rightSensor = new UnreliableSensor();	    
+	    }
+	    //back sensor is unreliable
+	    if (parameter.charAt(3)=='0') {
+	    	backwardSensor = new UnreliableSensor();
+	    }
 	}
 
 	public void startFailureAndRepairProcess(Direction direction, int meanTimeBetweenFailures, int meanTimeToRepair)

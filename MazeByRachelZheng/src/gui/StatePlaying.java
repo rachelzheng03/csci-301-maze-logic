@@ -5,6 +5,7 @@ import gui.Robot.Direction;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 
+import java.util.ArrayList;
 import java.util.logging.Logger;
 
 import generation.CardinalDirection;
@@ -177,46 +178,117 @@ public class StatePlaying implements State {
         // set the current position and direction consistently with the viewing direction
         setPositionDirectionViewingDirection();
 
-        if (panel != null) {
-        	startDrawer();
-        }
-        else {
-        	// else: dry-run without graphics, most likely for testing purposes
-        	printWarning();
-        }
+//        if (panel != null) {
+//        	startDrawer();
+//        }
+//        else {
+//        	// else: dry-run without graphics, most likely for testing purposes
+//        	printWarning();
+//        }
         if (control.getRobot()!=null&&control.getDriver()!=null) {
-        	Robot robot = control.getRobot();
-        	robot.setController(control);
-        	//System.out.println(control.sensorParameter);
-        	//dafault -r(1111):
-        	if(control.sensorParameter.equals("1111")) {
-        		ReliableSensor forwardReliableSensor=new ReliableSensor();
-        		ReliableSensor leftReliableSensor=new ReliableSensor();
-        		ReliableSensor rightReliableSensor=new ReliableSensor();
-        		ReliableSensor backwardReliableSensor=new ReliableSensor();
-        		robot.addDistanceSensor(forwardReliableSensor, Direction.FORWARD);
-        		robot.addDistanceSensor(backwardReliableSensor, Direction.BACKWARD);
-        		robot.addDistanceSensor(leftReliableSensor, Direction.LEFT);
-        		robot.addDistanceSensor(rightReliableSensor, Direction.RIGHT);
+        	control.getRobot().setController(control);
+
+        	if (control.sensorParameter==null) {
+        		ReliableRobot robot = (ReliableRobot) control.getRobot();
+        		robot.addDistanceSensor(robot.forwardSensor, Direction.FORWARD);
+        		robot.addDistanceSensor(robot.backwardSensor, Direction.BACKWARD);
+        		robot.addDistanceSensor(robot.leftSensor, Direction.LEFT);
+        		robot.addDistanceSensor(robot.rightSensor, Direction.RIGHT);
+        	}
+        	else if(control.sensorParameter.equals("1111")) { 
+        		ReliableRobot robot = (ReliableRobot) control.getRobot();
+        		robot.addDistanceSensor(robot.forwardSensor, Direction.FORWARD);
+        		robot.addDistanceSensor(robot.backwardSensor, Direction.BACKWARD);
+        		robot.addDistanceSensor(robot.leftSensor, Direction.LEFT);
+        		robot.addDistanceSensor(robot.rightSensor, Direction.RIGHT);
         	}
         	else {
-        		control.handleReliableOrUnreliableParameter(control.sensorParameter);
+        		UnreliableRobot robot=(UnreliableRobot) controller.getRobot();
+        		robot.addDistanceSensor(robot.forwardSensor, Direction.FORWARD);
+        		robot.addDistanceSensor(robot.backwardSensor, Direction.BACKWARD);
+        		robot.addDistanceSensor(robot.leftSensor, Direction.LEFT);
+        		robot.addDistanceSensor(robot.rightSensor, Direction.RIGHT);
         	}
+        	//Robot robot = control.getRobot();
         	//set control for robot
-        	RobotDriver driver = control.getDriver();
+        	//RobotDriver driver = control.getDriver();
+        	
+        	//set up default -r(1111):
+//        	ReliableSensor forwardReliableSensor=new ReliableSensor();
+//        	ReliableSensor leftReliableSensor=new ReliableSensor();
+//        	ReliableSensor rightReliableSensor=new ReliableSensor();
+//        	ReliableSensor backwardReliableSensor=new ReliableSensor();
+//        	control.getRobot().addDistanceSensor(forwardReliableSensor, Direction.FORWARD);
+//        	control.getRobot().addDistanceSensor(backwardReliableSensor, Direction.BACKWARD);
+//        	control.getRobot().addDistanceSensor(leftReliableSensor, Direction.LEFT);
+//        	control.getRobot().addDistanceSensor(rightReliableSensor, Direction.RIGHT);
+
+        	//set up unreliable sensors if indicated by -r parameter
+//        	if(control.sensorParameter!=null) {
+//        		if(!control.sensorParameter.equals("1111")) {
+//        			control.handleReliableOrUnreliableParameter(control.sensorParameter);
+//        		}
+//        	}
+        	
         	//set robot for robot driver
-        	driver.setRobot(control.getRobot());
+        	control.getDriver().setRobot(control.getRobot());
         	//set maze for robot driver
-        	driver.setMaze(maze);
+        	control.getDriver().setMaze(maze);
+        	
+        	//put indices (corresponds to mounted direction of sensor) of unreliable robots into an array list
+        	ArrayList<Integer> unreliable=new ArrayList<>();
+        	for(int i=0; i<4; i++) {
+        		if(control.sensorParameter.charAt(i)=='0')
+        			unreliable.add(i);
+        	}
+        	System.out.println("Setting up sensors. Game will show up shortly.");
+        	System.out.println(unreliable);
+
+        	//start failure and repair process for unreliable sensors
+        	for(int i=0; i<unreliable.size(); i++) {
+        		int count = unreliable.size();
+        		switch (unreliable.get(i)) {
+        		//forward sensor
+    			case 0: 
+    				control.getRobot().startFailureAndRepairProcess(Direction.FORWARD, 4, 2);
+    				break;
+    			//left sensor
+    			case 1:
+    				control.getRobot().startFailureAndRepairProcess(Direction.LEFT, 4, 2);
+    				break;
+    			//right sensor
+    			case 2:
+    				control.getRobot().startFailureAndRepairProcess(Direction.RIGHT, 4, 2);
+    				break;
+    			//backward sensor
+    			case 3:
+    				control.getRobot().startFailureAndRepairProcess(Direction.BACKWARD, 4, 2);
+    				break;
+    			}
+        		//wait for 1.3 seconds before starting the next StartAndFailureProcess, but not for the last one
+        		if(count!=1)
+					try {
+						Thread.sleep(1300);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+        	}
+        	if (panel != null) {
+        		startDrawer();
+        	}
+        	else {
+        		// else: dry-run without graphics, most likely for testing purposes
+        		printWarning();
+        	}
         	
         	try {
-//        		driver.drive2Exit();
-				if(driver.drive2Exit())
-					robot.move(1);
+				if(control.getDriver().drive2Exit())
+					control.getRobot().move(1);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-				switchFromPlayingToWinning(driver.getPathLength(), false);
+				switchFromPlayingToWinning(control.getDriver().getPathLength(), false);
 			}
         }
     }
@@ -256,6 +328,7 @@ public class StatePlaying implements State {
      */
     public void switchFromPlayingToWinning(int pathLength, boolean wonGame) {
     	// need to instantiate and configure the winning state
+    
         StateWinning currentState = new StateWinning();
         
         // The playing state needs 
@@ -274,6 +347,22 @@ public class StatePlaying implements State {
         // and hand over control to the new state
         control.setState(currentState);
         currentState.start(control, panel);
+        
+        Robot robot = control.getRobot();
+        //stop forward sensor if unreliable
+        if (control.sensorParameter.charAt(0)=='0')
+        	robot.stopFailureAndRepairProcess(Direction.FORWARD);
+        //stop left sensor if unreliable
+        if (control.sensorParameter.charAt(1)=='0')
+        	robot.stopFailureAndRepairProcess(Direction.LEFT);
+        //stop right sensor if unreliable
+        if (control.sensorParameter.charAt(2)=='0')
+            robot.stopFailureAndRepairProcess(Direction.RIGHT);
+        //stop backward sensor if unreliable
+        if (control.sensorParameter.charAt(3)=='0')
+            robot.stopFailureAndRepairProcess(Direction.BACKWARD);
+		
+
     }
     
     /**

@@ -27,10 +27,10 @@ public class ReliableRobot implements Robot {
 	private final static float ENERGY_FOR_FULL_ROTATION=12;
 	private final static float ENERGY_FOR_STEP_FORWARD=6;
 	protected int odometer; //distance traveled
-	protected DistanceSensor forwardSensor;
-	protected DistanceSensor backwardSensor;
-	protected DistanceSensor leftSensor;
-	protected DistanceSensor rightSensor;
+	protected ReliableSensor forwardSensor;
+	protected ReliableSensor backwardSensor;
+	protected ReliableSensor leftSensor;
+	protected ReliableSensor rightSensor;
 	protected boolean hasStopped;
 	
 	//constructor 
@@ -59,22 +59,22 @@ public class ReliableRobot implements Robot {
 		sensor.setSensorDirection(mountedDirection);
 		assert(controller.getMaze()!=null);
 		sensor.setMaze(controller.getMaze());
-		switch (mountedDirection) {
-		case FORWARD: 
-			forwardSensor=sensor;
-			break;
-		case LEFT:
-			leftSensor=sensor;
-			break;
-		case RIGHT:
-			rightSensor=sensor;
-			break;
-		case BACKWARD:
-			backwardSensor=sensor;
-			break;
-		default:
-			throw new IllegalArgumentException("Unexpected value: " + mountedDirection);
-		}
+//		switch (mountedDirection) {
+//		case FORWARD: 
+//			forwardSensor=sensor;
+//			break;
+//		case LEFT:
+//			leftSensor=sensor;
+//			break;
+//		case RIGHT:
+//			rightSensor=sensor;
+//			break;
+//		case BACKWARD:
+//			backwardSensor=sensor;
+//			break;
+//		default:
+//			throw new IllegalArgumentException("Unexpected value: " + mountedDirection);
+//		}
 	}
 
 	@Override
@@ -347,11 +347,11 @@ public class ReliableRobot implements Robot {
 				int steps = forwardSensor.distanceToObstacle(getCurrentPosition(), getCurrentDirection(), powersupply);
 				batteryLevel=batteryLevel-1;
 				return steps;
-			} catch (Exception e) {
+			} catch (Error|Exception e) {
 				// TODO Auto-generated catch block
 				if(e.getMessage()=="Sensor Failure: sensor not operational" && forwardSensor!=null)
 					throw new UnsupportedOperationException("sensor not operational");
-				e.printStackTrace();
+				//e.printStackTrace();
 			}
 			break;
 		case BACKWARD:
@@ -359,7 +359,7 @@ public class ReliableRobot implements Robot {
 				int steps = backwardSensor.distanceToObstacle(getCurrentPosition(), getCurrentDirection(), powersupply);
 				batteryLevel=batteryLevel-1;
 				return steps;
-			} catch (Exception e) {
+			} catch (Error|Exception e) {
 				// TODO Auto-generated catch block
 				if(e.getMessage()=="Sensor Failure: sensor not operational" && backwardSensor!=null)
 					throw new UnsupportedOperationException("sensor not operational");
@@ -371,7 +371,7 @@ public class ReliableRobot implements Robot {
 				int steps = leftSensor.distanceToObstacle(getCurrentPosition(), getCurrentDirection(), powersupply);
 				batteryLevel=batteryLevel-1;
 				return steps;
-			} catch (Exception e) {
+			} catch (Error|Exception e) {
 				// TODO Auto-generated catch block
 				if(e.getMessage()=="Sensor Failure: sensor not operational" && leftSensor!=null)
 					throw new UnsupportedOperationException("sensor not operational");
@@ -383,7 +383,7 @@ public class ReliableRobot implements Robot {
 				int steps = rightSensor.distanceToObstacle(getCurrentPosition(), getCurrentDirection(), powersupply);
 				batteryLevel=batteryLevel-1;
 				return steps;			
-				} catch (Exception e) {
+				} catch (Error|Exception e) {
 				// TODO Auto-generated catch block
 					if(e.getMessage()=="Sensor Failure: sensor not operational" && rightSensor!=null)
 						throw new UnsupportedOperationException("sensor not operational");
@@ -406,39 +406,52 @@ public class ReliableRobot implements Robot {
 				if (forwardSensor.distanceToObstacle(getCurrentPosition(), getCurrentDirection(), powersupply)==Integer.MAX_VALUE)
 					batteryLevel-=1;
 				return forwardSensor.distanceToObstacle(getCurrentPosition(), getCurrentDirection(), powersupply)==Integer.MAX_VALUE;
-			} catch (Exception e) {
+			} catch (Error|Exception e) {
 				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+				if(e.getMessage()=="Sensor Failure: sensor not operational" && forwardSensor!=null)
+					throw new UnsupportedOperationException("sensor not operational");
+				else {
+					e.printStackTrace();
+				}			}
 			break;
 		case BACKWARD:
 			try {
 				if (backwardSensor.distanceToObstacle(getCurrentPosition(), getCurrentDirection(), powersupply)==Integer.MAX_VALUE)
 					batteryLevel-=1;
 				return backwardSensor.distanceToObstacle(getCurrentPosition(), getCurrentDirection(), powersupply)==Integer.MAX_VALUE;
-			} catch (Exception e) {
+			} catch (Error|Exception e) {
 				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+				if(e.getMessage()=="Sensor Failure: sensor not operational" && backwardSensor!=null)
+					throw new UnsupportedOperationException("sensor not operational");
+				else {
+					e.printStackTrace();
+				}			}
 			break;
 		case LEFT:
 			try {
 				if (leftSensor.distanceToObstacle(getCurrentPosition(), getCurrentDirection(), powersupply)==Integer.MAX_VALUE)
 					batteryLevel-=1;
 				return leftSensor.distanceToObstacle(getCurrentPosition(), getCurrentDirection(), powersupply)==Integer.MAX_VALUE;
-			} catch (Exception e) {
+			} catch (Error|Exception e) {
 				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+				if(e.getMessage()=="Sensor Failure: sensor not operational" && leftSensor!=null)
+					throw new UnsupportedOperationException("sensor not operational");
+				else {
+					e.printStackTrace();
+				}			}
 			break;
 		case RIGHT:
 			try {
 				if (rightSensor.distanceToObstacle(getCurrentPosition(), getCurrentDirection(), powersupply)==Integer.MAX_VALUE)
 					batteryLevel-=1;
 				return rightSensor.distanceToObstacle(getCurrentPosition(), getCurrentDirection(), powersupply)==Integer.MAX_VALUE;
-			} catch (Exception e) {
+			} catch (Error|Exception e) {
 				// TODO Auto-generated catch block
-				e.printStackTrace();
+				if(e.getMessage()=="Sensor Failure: sensor not operational" && rightSensor!=null)
+					throw new UnsupportedOperationException("sensor not operational");
+				else {
+					e.printStackTrace();
+				}
 			}
 			break;
 		}

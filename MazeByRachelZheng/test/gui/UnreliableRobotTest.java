@@ -38,7 +38,7 @@ class UnreliableRobotTest {
 		factory.order(order);
 		factory.waitTillDelivered();
 		maze = order.getMaze();
-		robot=new UnreliableRobot();
+		robot=new UnreliableRobot("0000");
 		controller=new Control();
 		playingState=new StatePlaying();
 		playingState.setMaze(maze);
@@ -664,103 +664,14 @@ class UnreliableRobotTest {
 	}
 	
 	/**
-	 * Test distanceToObstacle method with all reliable sensors
-	 */
-	@Test
-	public void testDistanceToObstacleWithReliableSensors() {
-		ReliableSensor forwardSensor=new ReliableSensor();
-		ReliableSensor leftSensor=new ReliableSensor();
-		ReliableSensor rightSensor=new ReliableSensor();
-		ReliableSensor backwardSensor=new ReliableSensor();
-
-		robot.addDistanceSensor(forwardSensor, Direction.FORWARD);
-    	robot.addDistanceSensor(backwardSensor, Direction.BACKWARD);
-		robot.addDistanceSensor(leftSensor, Direction.LEFT);
-		robot.addDistanceSensor(rightSensor, Direction.RIGHT);		
-		
-		playingState.setCurrentPosition(1, 2);
-		
-		assert(robot.getCurrentDirection()==CardinalDirection.East);
-		//test East facing robot, forward 
-		assertEquals(0, robot.distanceToObstacle(Direction.FORWARD));
-		assertEquals(3499, robot.getBatteryLevel());
-		//test East facing robot, right 
-		assertEquals(2, robot.distanceToObstacle(Direction.RIGHT));
-		assertEquals(3498, robot.getBatteryLevel());
-		//test East facing robot, left 
-		assertEquals(0, robot.distanceToObstacle(Direction.LEFT));
-		assertEquals(3497, robot.getBatteryLevel());
-		//test East facing robot, backward 
-		assertEquals(1, robot.distanceToObstacle(Direction.BACKWARD));
-		assertEquals(3496, robot.getBatteryLevel());
-
-		
-		robot.rotate(Turn.RIGHT);
-		assert(robot.getCurrentDirection()==CardinalDirection.North);
-		assert(robot.getBatteryLevel()==3493);
-		//test North facing robot, forward 
-		assertEquals(2, robot.distanceToObstacle(Direction.FORWARD));
-		assertEquals(3492, robot.getBatteryLevel());
-		//test North facing robot, right 
-		assertEquals(1, robot.distanceToObstacle(Direction.RIGHT));
-		assertEquals(3491, robot.getBatteryLevel());
-		//test North facing robot, left 
-		assertEquals(0, robot.distanceToObstacle(Direction.LEFT));
-		assertEquals(3490, robot.getBatteryLevel());
-		//test North facing robot, backward 
-		assertEquals(0, robot.distanceToObstacle(Direction.BACKWARD));
-		assertEquals(3489, robot.getBatteryLevel());
-
-		
-		robot.rotate(Turn.RIGHT);
-		assert(robot.getCurrentDirection()==CardinalDirection.West);
-		assert(robot.getBatteryLevel()==3486);
-		//test West facing robot, forward 
-		assertEquals(1, robot.distanceToObstacle(Direction.FORWARD));
-		assertEquals(3485, robot.getBatteryLevel());
-		//test West facing robot, right 
-		assertEquals(0, robot.distanceToObstacle(Direction.RIGHT));
-		assertEquals(3484, robot.getBatteryLevel());
-		//test West facing robot, left 
-		assertEquals(2, robot.distanceToObstacle(Direction.LEFT));
-		assertEquals(3483, robot.getBatteryLevel());
-		//test West facing robot, backward 
-		assertEquals(0, robot.distanceToObstacle(Direction.BACKWARD));
-		assertEquals(3482, robot.getBatteryLevel());
-
-
-		robot.rotate(Turn.RIGHT);
-		assert(robot.getCurrentDirection()==CardinalDirection.South);
-		assert(robot.getBatteryLevel()==3479);
-		//test South facing robot, forward 
-		assertEquals(0, robot.distanceToObstacle(Direction.FORWARD));
-		assertEquals(3478, robot.getBatteryLevel());
-		//test South facing robot, right 
-		assertEquals(0, robot.distanceToObstacle(Direction.RIGHT));
-		assertEquals(3477, robot.getBatteryLevel());
-		//test South facing robot, left 
-		assertEquals(1, robot.distanceToObstacle(Direction.LEFT));
-		assertEquals(3476, robot.getBatteryLevel());
-		//test South facing robot, backward 
-		assertEquals(2, robot.distanceToObstacle(Direction.BACKWARD));
-		assertEquals(3475, robot.getBatteryLevel());
-		
-	}
-	
-	/**
 	 * Test distanceToObstacle method with all unreliable sensors, but failure and repair process has not been started
 	 */
 	@Test
 	public void testDistanceToObstacleWithUnreliableSensorsNoFRP() {
-		UnreliableSensor forwardSensor=new UnreliableSensor();
-		UnreliableSensor leftSensor=new UnreliableSensor();
-		UnreliableSensor rightSensor=new UnreliableSensor();
-		UnreliableSensor backwardSensor=new UnreliableSensor();
-
-		robot.addDistanceSensor(forwardSensor, Direction.FORWARD);
-    	robot.addDistanceSensor(backwardSensor, Direction.BACKWARD);
-		robot.addDistanceSensor(leftSensor, Direction.LEFT);
-		robot.addDistanceSensor(rightSensor, Direction.RIGHT);		
+		robot.addDistanceSensor(robot.forwardSensor, Direction.FORWARD);
+    	robot.addDistanceSensor(robot.backwardSensor, Direction.BACKWARD);
+		robot.addDistanceSensor(robot.leftSensor, Direction.LEFT);
+		robot.addDistanceSensor(robot.rightSensor, Direction.RIGHT);		
 		
 		playingState.setCurrentPosition(1, 2);
 		
@@ -827,26 +738,24 @@ class UnreliableRobotTest {
 		assertEquals(3476, robot.getBatteryLevel());
 		//test South facing robot, backward 
 		assertEquals(2, robot.distanceToObstacle(Direction.BACKWARD));
-		assertEquals(3475, robot.getBatteryLevel());
-		
+		assertEquals(3475, robot.getBatteryLevel());	
 	}
 	
 	/**
 	 * Test distanceToObstacle method with an unreliable front sensor. Failure and Repair Process started
 	 */
 	@Test
-	public void testDistanceToObstacleWithFrontUnreliableSensorFRPStarted() {
-		UnreliableSensor forwardSensor=new UnreliableSensor();
-		UnreliableSensor leftSensor=new UnreliableSensor();
-		UnreliableSensor rightSensor=new UnreliableSensor();
-		UnreliableSensor backwardSensor=new UnreliableSensor();
-
-		robot.addDistanceSensor(forwardSensor, Direction.FORWARD);
-    	robot.addDistanceSensor(backwardSensor, Direction.BACKWARD);
-		robot.addDistanceSensor(leftSensor, Direction.LEFT);
-		robot.addDistanceSensor(rightSensor, Direction.RIGHT);
+	public void testDistanceToObstacleWithUnreliableSensorsFRPStarted() {
+		robot.addDistanceSensor(robot.forwardSensor, Direction.FORWARD);
+    	robot.addDistanceSensor(robot.backwardSensor, Direction.BACKWARD);
+		robot.addDistanceSensor(robot.leftSensor, Direction.LEFT);
+		robot.addDistanceSensor(robot.rightSensor, Direction.RIGHT);
 		
-		robot.startFailureAndRepairProcess(Direction.FORWARD, 4, 2);
+		robot.startFailureAndRepairProcess(Direction.FORWARD, 4, 2);		
+		robot.startFailureAndRepairProcess(Direction.RIGHT, 4, 2);
+		robot.startFailureAndRepairProcess(Direction.LEFT, 4, 2);
+		robot.startFailureAndRepairProcess(Direction.BACKWARD, 4, 2);
+		
 		try {
 			Thread.sleep(5000);
 		} catch (InterruptedException e1) {
@@ -865,6 +774,34 @@ class UnreliableRobotTest {
 			assertTrue(e instanceof UnsupportedOperationException);
 			assertTrue(e.getMessage()=="sensor not operational");
 		}
+		
+		try {
+			assertEquals(2, robot.distanceToObstacle(Direction.RIGHT));
+			fail("sensor is not operational");
+		} catch (Exception e) {
+			// TODO: handle exception
+			assertTrue(e instanceof UnsupportedOperationException);
+			assertTrue(e.getMessage()=="sensor not operational");
+		}
+		
+		try {
+			assertEquals(0, robot.distanceToObstacle(Direction.LEFT));
+			fail("sensor is not operational");
+		} catch (Exception e) {
+			// TODO: handle exception
+			assertTrue(e instanceof UnsupportedOperationException);
+			assertTrue(e.getMessage()=="sensor not operational");
+		}
+		
+		try {
+			assertEquals(1, robot.distanceToObstacle(Direction.BACKWARD));
+			fail("sensor is not operational");
+		} catch (Exception e) {
+			// TODO: handle exception
+			assertTrue(e instanceof UnsupportedOperationException);
+			assertTrue(e.getMessage()=="sensor not operational");
+		}
+
 
 		robot.rotate(Turn.RIGHT);
 		assert(robot.getCurrentDirection()==CardinalDirection.North);
@@ -877,6 +814,34 @@ class UnreliableRobotTest {
 			assertTrue(e instanceof UnsupportedOperationException);
 			assertTrue(e.getMessage()=="sensor not operational");
 		}
+		
+		try {
+			assertEquals(1, robot.distanceToObstacle(Direction.RIGHT));
+			fail("sensor is not operational");
+		} catch (Exception e) {
+			// TODO: handle exception
+			assertTrue(e instanceof UnsupportedOperationException);
+			assertTrue(e.getMessage()=="sensor not operational");
+		}
+		
+		try {
+			assertEquals(0, robot.distanceToObstacle(Direction.LEFT));
+			fail("sensor is not operational");
+		} catch (Exception e) {
+			// TODO: handle exception
+			assertTrue(e instanceof UnsupportedOperationException);
+			assertTrue(e.getMessage()=="sensor not operational");
+		}
+		
+		try {
+			assertEquals(0, robot.distanceToObstacle(Direction.BACKWARD));
+			fail("sensor is not operational");
+		} catch (Exception e) {
+			// TODO: handle exception
+			assertTrue(e instanceof UnsupportedOperationException);
+			assertTrue(e.getMessage()=="sensor not operational");
+		}
+
 
 		
 		robot.rotate(Turn.RIGHT);
@@ -891,6 +856,36 @@ class UnreliableRobotTest {
 			assertTrue(e instanceof UnsupportedOperationException);
 			assertTrue(e.getMessage()=="sensor not operational");
 		}
+		try {
+			assertEquals(0, robot.distanceToObstacle(Direction.RIGHT));
+			fail("sensor is not operational");
+
+		} catch (Exception e) {
+			// TODO: handle exception
+			assertTrue(e instanceof UnsupportedOperationException);
+			assertTrue(e.getMessage()=="sensor not operational");
+		}
+		
+		try {
+			assertEquals(2, robot.distanceToObstacle(Direction.LEFT));
+			fail("sensor is not operational");
+
+		} catch (Exception e) {
+			// TODO: handle exception
+			assertTrue(e instanceof UnsupportedOperationException);
+			assertTrue(e.getMessage()=="sensor not operational");
+		}
+		
+		try {
+			assertEquals(0, robot.distanceToObstacle(Direction.BACKWARD));
+			fail("sensor is not operational");
+
+		} catch (Exception e) {
+			// TODO: handle exception
+			assertTrue(e instanceof UnsupportedOperationException);
+			assertTrue(e.getMessage()=="sensor not operational");
+		}
+
 
 		robot.rotate(Turn.RIGHT);
 		assert(robot.getCurrentDirection()==CardinalDirection.South);
@@ -902,6 +897,50 @@ class UnreliableRobotTest {
 			assertTrue(e instanceof UnsupportedOperationException);
 			assertTrue(e.getMessage()=="sensor not operational");
 		}
+		try {
+			assertEquals(0, robot.distanceToObstacle(Direction.RIGHT));
+		} catch (Exception e) {
+			// TODO: handle exception
+			assertTrue(e instanceof UnsupportedOperationException);
+			assertTrue(e.getMessage()=="sensor not operational");
+		}
+		
+		
+		try {
+			assertEquals(1, robot.distanceToObstacle(Direction.LEFT));
+		} catch (Exception e) {
+			// TODO: handle exception
+			assertTrue(e instanceof UnsupportedOperationException);
+			assertTrue(e.getMessage()=="sensor not operational");
+		}
+		
+		try {
+			assertEquals(2, robot.distanceToObstacle(Direction.BACKWARD));
+		} catch (Exception e) {
+			// TODO: handle exception
+			assertTrue(e instanceof UnsupportedOperationException);
+			assertTrue(e.getMessage()=="sensor not operational");
+		}
+		
+		//test can see through infinity
+		try {
+			robot.canSeeThroughTheExitIntoEternity(Direction.BACKWARD);
+			fail("sensor not operational");
+		} catch (Exception e) {
+			// TODO: handle exception
+			assertTrue(e instanceof UnsupportedOperationException);
+		}
+		
+		
+		
+		try {
+			robot.canSeeThroughTheExitIntoEternity(Direction.LEFT);
+			fail("sensor not operational");
+		} catch (Exception e) {
+			// TODO: handle exception
+			assertTrue(e instanceof UnsupportedOperationException);
+		}
+		
 		
 		try {
 			robot.canSeeThroughTheExitIntoEternity(Direction.FORWARD);
@@ -909,87 +948,6 @@ class UnreliableRobotTest {
 		} catch (Exception e) {
 			// TODO: handle exception
 			assertTrue(e instanceof UnsupportedOperationException);
-		}
-		
-		try {
-			Thread.sleep(2000);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		assertEquals(0, robot.distanceToObstacle(Direction.FORWARD));
-		
-		robot.stopFailureAndRepairProcess(Direction.FORWARD);
-
-	}
-	
-	/**
-	 * Test distanceToObstacle method with an unreliable front sensor. Failure and Repair Process started
-	 */
-	@Test
-	public void testDistanceToObstacleWithRightUnreliableSensorFRPStarted() {
-		UnreliableSensor rightSensor=new UnreliableSensor();
-
-		robot.addDistanceSensor(rightSensor, Direction.RIGHT);
-		
-		robot.startFailureAndRepairProcess(Direction.RIGHT, 4, 2);
-		
-		//set sensors operational state to false
-		try {
-			Thread.sleep(5000);
-		} catch (InterruptedException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		
-		playingState.setCurrentPosition(1, 2);
-		
-		assert(robot.getCurrentDirection()==CardinalDirection.East);
-		//test East facing robot, forward 
-		try {
-			assertEquals(2, robot.distanceToObstacle(Direction.RIGHT));
-			fail("sensor is not operational");
-		} catch (Exception e) {
-			// TODO: handle exception
-			assertTrue(e instanceof UnsupportedOperationException);
-			assertTrue(e.getMessage()=="sensor not operational");
-		}
-
-		robot.rotate(Turn.RIGHT);
-		assert(robot.getCurrentDirection()==CardinalDirection.North);
-		//test North facing robot, forward 
-		try {
-			assertEquals(1, robot.distanceToObstacle(Direction.RIGHT));
-			fail("sensor is not operational");
-		} catch (Exception e) {
-			// TODO: handle exception
-			assertTrue(e instanceof UnsupportedOperationException);
-			assertTrue(e.getMessage()=="sensor not operational");
-		}
-
-		
-		robot.rotate(Turn.RIGHT);
-		assert(robot.getCurrentDirection()==CardinalDirection.West);
-		//test West facing robot, forward 
-		try {
-			assertEquals(0, robot.distanceToObstacle(Direction.RIGHT));
-			fail("sensor is not operational");
-
-		} catch (Exception e) {
-			// TODO: handle exception
-			assertTrue(e instanceof UnsupportedOperationException);
-			assertTrue(e.getMessage()=="sensor not operational");
-		}
-
-		robot.rotate(Turn.RIGHT);
-		assert(robot.getCurrentDirection()==CardinalDirection.South);
-		//test South facing robot, forward 
-		try {
-			assertEquals(0, robot.distanceToObstacle(Direction.RIGHT));
-		} catch (Exception e) {
-			// TODO: handle exception
-			assertTrue(e instanceof UnsupportedOperationException);
-			assertTrue(e.getMessage()=="sensor not operational");
 		}
 		
 		try {
@@ -1006,249 +964,16 @@ class UnreliableRobotTest {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		assertEquals(0, robot.distanceToObstacle(Direction.RIGHT));
-		
-		robot.stopFailureAndRepairProcess(Direction.RIGHT);
-
-	}
-	
-	/**
-	 * Test distanceToObstacle method with an unreliable left sensor. Failure and Repair Process started
-	 */
-	@Test
-	public void testDistanceToObstacleWithLeftUnreliableSensorFRPStarted() {
-		UnreliableSensor leftSensor=new UnreliableSensor();
-
-		robot.addDistanceSensor(leftSensor, Direction.LEFT);
-		
-		robot.startFailureAndRepairProcess(Direction.LEFT, 4, 2);
-		
-		//set sensors operational state to false
-		try {
-			Thread.sleep(5000);
-		} catch (InterruptedException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		
-		playingState.setCurrentPosition(1, 2);
-		
-		assert(robot.getCurrentDirection()==CardinalDirection.East);
-		//test East facing robot, forward 
-		try {
-			assertEquals(0, robot.distanceToObstacle(Direction.LEFT));
-			fail("sensor is not operational");
-		} catch (Exception e) {
-			// TODO: handle exception
-			assertTrue(e instanceof UnsupportedOperationException);
-			assertTrue(e.getMessage()=="sensor not operational");
-		}
-
-		robot.rotate(Turn.RIGHT);
-		assert(robot.getCurrentDirection()==CardinalDirection.North);
-		//test North facing robot, forward 
-		try {
-			assertEquals(0, robot.distanceToObstacle(Direction.LEFT));
-			fail("sensor is not operational");
-		} catch (Exception e) {
-			// TODO: handle exception
-			assertTrue(e instanceof UnsupportedOperationException);
-			assertTrue(e.getMessage()=="sensor not operational");
-		}
-
-		
-		robot.rotate(Turn.RIGHT);
-		assert(robot.getCurrentDirection()==CardinalDirection.West);
-		//test West facing robot, forward 
-		try {
-			assertEquals(2, robot.distanceToObstacle(Direction.LEFT));
-			fail("sensor is not operational");
-
-		} catch (Exception e) {
-			// TODO: handle exception
-			assertTrue(e instanceof UnsupportedOperationException);
-			assertTrue(e.getMessage()=="sensor not operational");
-		}
-
-		robot.rotate(Turn.RIGHT);
-		assert(robot.getCurrentDirection()==CardinalDirection.South);
-		//test South facing robot, forward 
-		try {
-			assertEquals(1, robot.distanceToObstacle(Direction.LEFT));
-		} catch (Exception e) {
-			// TODO: handle exception
-			assertTrue(e instanceof UnsupportedOperationException);
-			assertTrue(e.getMessage()=="sensor not operational");
-		}
-		
-		try {
-			robot.canSeeThroughTheExitIntoEternity(Direction.LEFT);
-			fail("sensor not operational");
-		} catch (Exception e) {
-			// TODO: handle exception
-			assertTrue(e instanceof UnsupportedOperationException);
-		}
-		
-		try {
-			Thread.sleep(2000);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		assertEquals(0, robot.distanceToObstacle(Direction.FORWARD));
 		assertEquals(1, robot.distanceToObstacle(Direction.LEFT));
-		
-		robot.stopFailureAndRepairProcess(Direction.LEFT);
-	}
-	
-	/**
-	 * Test distanceToObstacle method with an unreliable back sensor. Failure and Repair Process started
-	 */
-	@Test
-	public void testDistanceToObstacleWithBackUnreliableSensorFRPStarted() {
-		UnreliableSensor backwardSensor=new UnreliableSensor();
-
-		robot.addDistanceSensor(backwardSensor, Direction.BACKWARD);
-		
-		robot.startFailureAndRepairProcess(Direction.BACKWARD, 4, 2);
-		
-		//set sensors operational state to false
-		try {
-			Thread.sleep(5000);
-		} catch (InterruptedException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		
-		playingState.setCurrentPosition(1, 2);
-		
-		assert(robot.getCurrentDirection()==CardinalDirection.East);
-		//test East facing robot, forward 
-		try {
-			assertEquals(1, robot.distanceToObstacle(Direction.BACKWARD));
-			fail("sensor is not operational");
-		} catch (Exception e) {
-			// TODO: handle exception
-			assertTrue(e instanceof UnsupportedOperationException);
-			assertTrue(e.getMessage()=="sensor not operational");
-		}
-
-		robot.rotate(Turn.RIGHT);
-		assert(robot.getCurrentDirection()==CardinalDirection.North);
-		//test North facing robot, forward 
-		try {
-			assertEquals(0, robot.distanceToObstacle(Direction.BACKWARD));
-			fail("sensor is not operational");
-		} catch (Exception e) {
-			// TODO: handle exception
-			assertTrue(e instanceof UnsupportedOperationException);
-			assertTrue(e.getMessage()=="sensor not operational");
-		}
-
-		
-		robot.rotate(Turn.RIGHT);
-		assert(robot.getCurrentDirection()==CardinalDirection.West);
-		//test West facing robot, forward 
-		try {
-			assertEquals(0, robot.distanceToObstacle(Direction.BACKWARD));
-			fail("sensor is not operational");
-
-		} catch (Exception e) {
-			// TODO: handle exception
-			assertTrue(e instanceof UnsupportedOperationException);
-			assertTrue(e.getMessage()=="sensor not operational");
-		}
-
-		robot.rotate(Turn.RIGHT);
-		assert(robot.getCurrentDirection()==CardinalDirection.South);
-		//test South facing robot, forward 
-		try {
-			assertEquals(2, robot.distanceToObstacle(Direction.BACKWARD));
-		} catch (Exception e) {
-			// TODO: handle exception
-			assertTrue(e instanceof UnsupportedOperationException);
-			assertTrue(e.getMessage()=="sensor not operational");
-		}
-		
-		try {
-			robot.canSeeThroughTheExitIntoEternity(Direction.BACKWARD);
-			fail("sensor not operational");
-		} catch (Exception e) {
-			// TODO: handle exception
-			assertTrue(e instanceof UnsupportedOperationException);
-		}
-		
-		try {
-			Thread.sleep(2000);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 		assertEquals(2, robot.distanceToObstacle(Direction.BACKWARD));
+		assertEquals(0, robot.distanceToObstacle(Direction.RIGHT));
+
 		
+		robot.stopFailureAndRepairProcess(Direction.FORWARD);
+		robot.stopFailureAndRepairProcess(Direction.RIGHT);
+		robot.stopFailureAndRepairProcess(Direction.LEFT);
 		robot.stopFailureAndRepairProcess(Direction.BACKWARD);
-
-	}
-	
-	@Test
-	public void testCanSeeThroughTheExitIntoExternityReliable() {
-		//test that method returns true if robot sensor direction is in direction of exit
-		//true case
-		//false case
-		//test at exits facing all directions
-		ReliableSensor forwardSensor=new ReliableSensor();
-		ReliableSensor leftSensor=new ReliableSensor();
-		ReliableSensor rightSensor=new ReliableSensor();
-		ReliableSensor backwardSensor=new ReliableSensor();
-
-		robot.addDistanceSensor(forwardSensor, Direction.FORWARD);
-    	robot.addDistanceSensor(backwardSensor, Direction.BACKWARD);
-		robot.addDistanceSensor(leftSensor, Direction.LEFT);
-		robot.addDistanceSensor(rightSensor, Direction.RIGHT);		
-		
-		playingState.setCurrentPosition(2, 0); //set current position to exit 
-		assert(maze.getExitPosition()[0]==2);
-		assert(maze.getExitPosition()[1]==0);
-		assertFalse(robot.canSeeThroughTheExitIntoEternity(Direction.BACKWARD));
-		assertEquals(3500, robot.getBatteryLevel());
-		assertFalse(robot.canSeeThroughTheExitIntoEternity(Direction.FORWARD));
-		assertEquals(3500, robot.getBatteryLevel());
-		assertFalse(robot.canSeeThroughTheExitIntoEternity(Direction.LEFT));
-		assertEquals(3500, robot.getBatteryLevel());
-		assertTrue(robot.canSeeThroughTheExitIntoEternity(Direction.RIGHT));
-		assertEquals(3499, robot.getBatteryLevel());
-		
-		robot.rotate(Turn.RIGHT); //cd:north
-		assert(robot.getBatteryLevel()==3496);
-		assertFalse(robot.canSeeThroughTheExitIntoEternity(Direction.BACKWARD));
-		assertEquals(3496, robot.getBatteryLevel());
-		assertTrue(robot.canSeeThroughTheExitIntoEternity(Direction.FORWARD));
-		assertEquals(3495, robot.getBatteryLevel());
-		assertFalse(robot.canSeeThroughTheExitIntoEternity(Direction.LEFT));
-		assertEquals(3495, robot.getBatteryLevel());
-		assertFalse(robot.canSeeThroughTheExitIntoEternity(Direction.RIGHT));
-		assertEquals(3495, robot.getBatteryLevel());
-
-		robot.rotate(Turn.RIGHT); //cd:west
-		assert(robot.getBatteryLevel()==3492);
-		assertFalse(robot.canSeeThroughTheExitIntoEternity(Direction.BACKWARD));
-		assertEquals(3492, robot.getBatteryLevel());
-		assertFalse(robot.canSeeThroughTheExitIntoEternity(Direction.FORWARD));
-		assertEquals(3492, robot.getBatteryLevel());
-		assertTrue(robot.canSeeThroughTheExitIntoEternity(Direction.LEFT));
-		assertEquals(3491, robot.getBatteryLevel());
-		assertFalse(robot.canSeeThroughTheExitIntoEternity(Direction.RIGHT));
-		assertEquals(3491, robot.getBatteryLevel());
-		
-		robot.rotate(Turn.RIGHT); //cd:south
-		assert(robot.getBatteryLevel()==3488);
-		assertTrue(robot.canSeeThroughTheExitIntoEternity(Direction.BACKWARD));
-		assertEquals(3487, robot.getBatteryLevel());
-		assertFalse(robot.canSeeThroughTheExitIntoEternity(Direction.FORWARD));
-		assertEquals(3487, robot.getBatteryLevel());
-		assertFalse(robot.canSeeThroughTheExitIntoEternity(Direction.LEFT));
-		assertEquals(3487, robot.getBatteryLevel());
-		assertFalse(robot.canSeeThroughTheExitIntoEternity(Direction.RIGHT));
-		assertEquals(3487, robot.getBatteryLevel());
 	}
 	
 	
@@ -1291,32 +1016,41 @@ class UnreliableRobotTest {
 	
 	@Test
 	public void testStartFailureAndRepairProcess() {
-		UnreliableSensor forwardSensor=new UnreliableSensor();
-		robot.addDistanceSensor(forwardSensor, Direction.FORWARD);
-		robot.startFailureAndRepairProcess(Direction.FORWARD, 4, 2);
+		robot.addDistanceSensor(robot.forwardSensor, Direction.FORWARD);
+    	robot.addDistanceSensor(robot.backwardSensor, Direction.BACKWARD);
+		robot.addDistanceSensor(robot.leftSensor, Direction.LEFT);
+		robot.addDistanceSensor(robot.rightSensor, Direction.RIGHT);
+		
+		robot.startFailureAndRepairProcess(Direction.FORWARD, 4, 2);		
+		robot.startFailureAndRepairProcess(Direction.RIGHT, 4, 2);
+		robot.startFailureAndRepairProcess(Direction.LEFT, 4, 2);
+		robot.startFailureAndRepairProcess(Direction.BACKWARD, 4, 2);
+		
 		try {
 			Thread.sleep(5000);
 		} catch (InterruptedException e) {
 		}
-		assertFalse(forwardSensor.getOperational());
+		assertFalse(robot.forwardSensor.getOperational());
+		assertFalse(robot.backwardSensor.getOperational());
+		assertFalse(robot.leftSensor.getOperational());
+		assertFalse(robot.rightSensor.getOperational());
+
 		try {
 			Thread.sleep(2000);
 		} catch (InterruptedException e) {
 		}
-		assertTrue(forwardSensor.getOperational());
+		assertTrue(robot.forwardSensor.getOperational());
+		assertTrue(robot.backwardSensor.getOperational());
+		assertTrue(robot.leftSensor.getOperational());
+		assertTrue(robot.rightSensor.getOperational());
 	}
 	
 	@Test
 	public void testStopFailureAndRepairProcess() {
-		UnreliableSensor forwardSensor=new UnreliableSensor();
-		UnreliableSensor leftSensor=new UnreliableSensor();
-		UnreliableSensor rightSensor=new UnreliableSensor();
-		UnreliableSensor backwardSensor=new UnreliableSensor();
-
-		robot.addDistanceSensor(forwardSensor, Direction.FORWARD);
-    	robot.addDistanceSensor(backwardSensor, Direction.BACKWARD);
-		robot.addDistanceSensor(leftSensor, Direction.LEFT);
-		robot.addDistanceSensor(rightSensor, Direction.RIGHT);	
+		robot.addDistanceSensor(robot.forwardSensor, Direction.FORWARD);
+    	robot.addDistanceSensor(robot.backwardSensor, Direction.BACKWARD);
+		robot.addDistanceSensor(robot.leftSensor, Direction.LEFT);
+		robot.addDistanceSensor(robot.rightSensor, Direction.RIGHT);	
 		
 		try {
 			robot.stopFailureAndRepairProcess(Direction.FORWARD);
@@ -1335,22 +1069,22 @@ class UnreliableRobotTest {
 		} catch (InterruptedException e) {
 		}
 		
-		assertFalse(forwardSensor.getOperational());
+		assertFalse(robot.forwardSensor.getOperational());
 		robot.stopFailureAndRepairProcess(Direction.FORWARD);
 		//sensor should end in an operational state
-		assertTrue(forwardSensor.getOperational());
+		assertTrue(robot.forwardSensor.getOperational());
 		
 		robot.stopFailureAndRepairProcess(Direction.LEFT);
 		//sensor should end in an operational state
-		assertTrue(leftSensor.getOperational());
+		assertTrue(robot.leftSensor.getOperational());
 		
 		robot.stopFailureAndRepairProcess(Direction.RIGHT);
 		//sensor should end in an operational state
-		assertTrue(rightSensor.getOperational());
+		assertTrue(robot.rightSensor.getOperational());
 		
 		robot.stopFailureAndRepairProcess(Direction.BACKWARD);
 		//sensor should end in an operational state
-		assertTrue(backwardSensor.getOperational());
+		assertTrue(robot.backwardSensor.getOperational());
 		
 	}
 	

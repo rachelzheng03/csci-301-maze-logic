@@ -1,8 +1,10 @@
 package gui;
 
+import java.util.ArrayList;
 import java.util.logging.Logger;
 
 import gui.Constants.UserInput;
+import gui.Robot.Direction;
 
 
 /**

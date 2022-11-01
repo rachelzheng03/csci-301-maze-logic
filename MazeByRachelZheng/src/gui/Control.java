@@ -310,12 +310,19 @@ public class Control extends JFrame implements KeyListener {
 					setRobotAndDriver(reliableRobot, driver);
 				}
 				else {
-					UnreliableRobot unreliableRobot=new UnreliableRobot();
+					UnreliableRobot unreliableRobot=new UnreliableRobot(args[i+1]);
 					setRobotAndDriver(unreliableRobot, driver);
 				}
 				sensorParameter=args[i+1];
 			}
 	    }
+	    //if -r has no parameter, set the robot to a reliable robot (default)
+	    if (sensorParameter==null) {
+	    	ReliableRobot reliableRobot=new ReliableRobot();
+			setRobotAndDriver(reliableRobot, driver);
+	    }
+	  
+	    
 	}
 	
 	/**
@@ -334,6 +341,9 @@ public class Control extends JFrame implements KeyListener {
 	    	//add front unreliable sensor to unreliable robot
 	    	getRobot().addDistanceSensor(frontUnreliableSensor, Direction.FORWARD);
 	    }
+//	    else {
+//			ReliableSensor frontReliableSensor=new ReliableSensor()
+//		}
 	    //left sensor is unreliable
 	    if (parameter.charAt(1)=='0') {
 	    	UnreliableSensor leftUnreliableSensor = new UnreliableSensor();
