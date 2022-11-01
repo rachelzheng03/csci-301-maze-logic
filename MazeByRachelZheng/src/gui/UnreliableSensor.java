@@ -24,7 +24,7 @@ public class UnreliableSensor extends ReliableSensor implements Runnable {
 	private boolean hasStopped; 
 	private int meanTimeBetweenFailures;
 	private int meanTimeToRepair;
-	private Thread operationalState;
+	protected Thread operationalState;
 	private boolean startedFRP; // is true if startFailureAndRepairProcess has been called. is false otherwise
 	
 	public UnreliableSensor() {
@@ -34,29 +34,32 @@ public class UnreliableSensor extends ReliableSensor implements Runnable {
 		hasStopped=false;
 	}
 	
+	
 	public int distanceToObstacle(int[] currentPosition, CardinalDirection currentDirection, float[] powersupply)
 			throws Exception {
 		if(!operational)
 			throw new Error("Sensor Failure: sensor not operational");
 		return super.distanceToObstacle(currentPosition, currentDirection, powersupply);
 	}
-	
+
 	public void run() {
-		System.out.println("starting thread");
+		System.out.println("starting thread"+mountedDirection);
 		try {
 			while(true){
 				Thread.sleep(meanTimeBetweenFailures*1000);
 				//fail sensor
 				operational=false;
-				System.out.println(operational);
+				System.out.println(operational+" "+" "+mountedDirection);
 				Thread.sleep(meanTimeToRepair*1000);
 				//sensor repaired
 				operational=true;
-				System.out.println(operational);
+				System.out.println(operational+" "+" "+mountedDirection);
 			}
 		} catch (InterruptedException e) {
 			// TODO: handle exception
-			e.printStackTrace();
+			//e.printStackTrace();
+			operationalState=null;
+			return;
 		}
 	}
 	
@@ -78,7 +81,7 @@ public class UnreliableSensor extends ReliableSensor implements Runnable {
 		//stop thread
 		while (!hasStopped) {
 			if (operational) {
-				System.out.println("start stop");
+				System.out.println("start stop" + mountedDirection);
 				operationalState.interrupt();
 				hasStopped=true;
 			}
