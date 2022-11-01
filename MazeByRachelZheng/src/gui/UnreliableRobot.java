@@ -52,6 +52,88 @@ public class UnreliableRobot extends ReliableRobot{
 	    }
 	}
 
+	private DistanceSensor findReliable() {
+		if (controller.sensorParameter.charAt(0)=='1') {
+			System.out.println("what sensor switch");
+			return forwardSensor;
+		}
+		if (leftSensor instanceof ReliableSensor) {
+			System.out.println("left sensor switch");
+			rotate(Turn.RIGHT);
+			return leftSensor;
+		}
+		if (rightSensor instanceof ReliableSensor) {
+			System.out.println("right sensor switch");
+			rotate(Turn.LEFT);
+			return rightSensor;
+		}
+		if (backwardSensor instanceof ReliableSensor) {
+			System.out.println("back sensor switch");
+			rotate(Turn.AROUND);
+			return backwardSensor;
+		}
+		return null;
+	}
+	
+	@Override
+	public int distanceToObstacle(Direction direction) throws UnsupportedOperationException {
+		// TODO Auto-generated method stub
+		float[] powersupply = {batteryLevel};
+		switch (direction)	{	
+		case FORWARD: 
+			try {
+				int steps = forwardSensor.distanceToObstacle(getCurrentPosition(), getCurrentDirection(), powersupply);
+				batteryLevel=batteryLevel-1;
+				return steps;
+			} catch (Error|Exception e) {
+				// TODO Auto-generated catch block
+				if(e.getMessage()=="Sensor Failure: sensor not operational" && forwardSensor!=null) {
+					throw new UnsupportedOperationException("sensor not operational");
+				}
+				else {
+					e.printStackTrace();
+				}
+			}
+			//break;
+		case BACKWARD:
+			try {
+				int steps = backwardSensor.distanceToObstacle(getCurrentPosition(), getCurrentDirection(), powersupply);
+				batteryLevel=batteryLevel-1;
+				return steps;
+			} catch (Error|Exception e) {
+				// TODO Auto-generated catch block
+				if(e.getMessage()=="Sensor Failure: sensor not operational" && backwardSensor!=null)
+					throw new UnsupportedOperationException("sensor not operational");
+				e.printStackTrace();
+			}
+			break;
+		case LEFT:
+			try {
+				int steps = leftSensor.distanceToObstacle(getCurrentPosition(), getCurrentDirection(), powersupply);
+				batteryLevel=batteryLevel-1;
+				return steps;
+			} catch (Error|Exception e) {
+				// TODO Auto-generated catch block
+				if(e.getMessage()=="Sensor Failure: sensor not operational" && leftSensor!=null)
+					throw new UnsupportedOperationException("sensor not operational");
+				e.printStackTrace();
+			}
+			break;
+		case RIGHT:
+			try {
+				int steps = rightSensor.distanceToObstacle(getCurrentPosition(), getCurrentDirection(), powersupply);
+				batteryLevel=batteryLevel-1;
+				return steps;			
+				} catch (Error|Exception e) {
+				// TODO Auto-generated catch block
+					if(e.getMessage()=="Sensor Failure: sensor not operational" && rightSensor!=null)
+						throw new UnsupportedOperationException("sensor not operational");
+				e.printStackTrace();
+			}
+			break;
+		}
+		throw new UnsupportedOperationException();
+	}
 	public void startFailureAndRepairProcess(Direction direction, int meanTimeBetweenFailures, int meanTimeToRepair)
 			throws UnsupportedOperationException {
 		// TODO Auto-generated method stub

@@ -63,7 +63,7 @@ public interface Robot {
 	 * These directions are also used to express how
 	 * a sensor is mounted on the robot.
 	 */
-	public enum Direction { LEFT, RIGHT, FORWARD, BACKWARD };
+	public enum Direction { LEFT, RIGHT, FORWARD, BACKWARD }
 	
 	///////////////////////////////////////////////////////////////////
 	/////////////////// Initial configuration of a robot   ////////////

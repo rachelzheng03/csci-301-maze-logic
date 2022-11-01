@@ -209,29 +209,9 @@ public class StatePlaying implements State {
         		robot.addDistanceSensor(robot.leftSensor, Direction.LEFT);
         		robot.addDistanceSensor(robot.rightSensor, Direction.RIGHT);
         	}
-        	//Robot robot = control.getRobot();
-        	//set control for robot
-        	//RobotDriver driver = control.getDriver();
-        	
-        	//set up default -r(1111):
-//        	ReliableSensor forwardReliableSensor=new ReliableSensor();
-//        	ReliableSensor leftReliableSensor=new ReliableSensor();
-//        	ReliableSensor rightReliableSensor=new ReliableSensor();
-//        	ReliableSensor backwardReliableSensor=new ReliableSensor();
-//        	control.getRobot().addDistanceSensor(forwardReliableSensor, Direction.FORWARD);
-//        	control.getRobot().addDistanceSensor(backwardReliableSensor, Direction.BACKWARD);
-//        	control.getRobot().addDistanceSensor(leftReliableSensor, Direction.LEFT);
-//        	control.getRobot().addDistanceSensor(rightReliableSensor, Direction.RIGHT);
-
-        	//set up unreliable sensors if indicated by -r parameter
-//        	if(control.sensorParameter!=null) {
-//        		if(!control.sensorParameter.equals("1111")) {
-//        			control.handleReliableOrUnreliableParameter(control.sensorParameter);
-//        		}
-//        	}
         	
         	//set robot for robot driver
-        	control.getDriver().setRobot(control.getRobot());
+        	control.getDriver().setRobot(controller.getRobot());
         	//set maze for robot driver
         	control.getDriver().setMaze(maze);
         	
@@ -281,7 +261,7 @@ public class StatePlaying implements State {
         		// else: dry-run without graphics, most likely for testing purposes
         		printWarning();
         	}
-        	
+       // 	assert(control.getRobot().getBatteryLevel()==3500);
         	try {
 				if(control.getDriver().drive2Exit())
 					control.getRobot().move(1);
