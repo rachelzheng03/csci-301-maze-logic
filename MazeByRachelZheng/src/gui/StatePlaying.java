@@ -323,10 +323,6 @@ public class StatePlaying implements State {
         
         LOGGER.fine("Control switches from playing to winning screen, game completed.");
         
-        // update the context class with the new state
-        // and hand over control to the new state
-        control.setState(currentState);
-        currentState.start(control, panel);
         
         Robot robot = control.getRobot();
         //stop forward sensor if unreliable
@@ -341,6 +337,11 @@ public class StatePlaying implements State {
         //stop backward sensor if unreliable
         if (control.sensorParameter.charAt(3)=='0')
             robot.stopFailureAndRepairProcess(Direction.BACKWARD);
+        
+        // update the context class with the new state
+        // and hand over control to the new state
+        control.setState(currentState);
+        currentState.start(control, panel);
 		
 
     }

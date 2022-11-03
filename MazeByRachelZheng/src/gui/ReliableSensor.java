@@ -60,6 +60,7 @@ public class ReliableSensor implements DistanceSensor {
 		//if power at 0 or less, throw PowerFailure
 		if (currentPower==0)
 			throw new Error("Power Failure: power supply is insufficient for the operation");
+		
 		//count how many steps it takes to get to a wall in the direction of the sensor relative to the robot
 		int step=0;
 		assert(mountedDirection instanceof Direction);

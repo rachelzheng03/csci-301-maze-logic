@@ -59,22 +59,6 @@ public class ReliableRobot implements Robot {
 		sensor.setSensorDirection(mountedDirection);
 		assert(controller.getMaze()!=null);
 		sensor.setMaze(controller.getMaze());
-//		switch (mountedDirection) {
-//		case FORWARD: 
-//			forwardSensor=sensor;
-//			break;
-//		case LEFT:
-//			leftSensor=sensor;
-//			break;
-//		case RIGHT:
-//			rightSensor=sensor;
-//			break;
-//		case BACKWARD:
-//			backwardSensor=sensor;
-//			break;
-//		default:
-//			throw new IllegalArgumentException("Unexpected value: " + mountedDirection);
-//		}
 	}
 
 	@Override
@@ -351,6 +335,9 @@ public class ReliableRobot implements Robot {
 				// TODO Auto-generated catch block
 				if(e.getMessage()=="Sensor Failure: sensor not operational" && forwardSensor!=null)
 					throw new UnsupportedOperationException("sensor not operational");
+				if(e.getMessage()=="Power Failure: power supply is insufficient for the operation") {
+					hasStopped=true;
+				}
 				//e.printStackTrace();
 			}
 			break;

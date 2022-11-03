@@ -25,7 +25,6 @@ public class WallFollower implements RobotDriver {
 	private Robot robot;
 	private Maze maze;
 	private float startBattery;
-	private ArrayList<Integer> reliable;
 	
 	public WallFollower() {
 		// TODO Auto-generated constructor stub
@@ -64,54 +63,75 @@ public class WallFollower implements RobotDriver {
 	private void turn2FaceExitAtExit() throws Exception {
 		assert(robot.isAtExit()); //only call method when robot is at the exit
 		boolean canSeeExit=false;
+		boolean switched=false; //keeps track if the sensor has been switched/wallfollower has found a sensor that is operational; 
 		CardinalDirection oldCD = robot.getCurrentDirection();
-		try {
-			canSeeExit = robot.canSeeThroughTheExitIntoEternity(Direction.FORWARD);
-			//find another sensor that is operational to find the distance to obstacle in the original direction
-		}catch (Exception e) {
-			// TODO: handle exception
-			if(e instanceof UnsupportedOperationException && e.getMessage()==("sensor not operational")) {
-				int whichSensor=findOperational();
-				if (whichSensor==0) {
-					if(robot.hasStopped())
-						throw new Exception("Robot has stopped");
-					canSeeExit = robot.canSeeThroughTheExitIntoEternity(Direction.FORWARD);
-				}
-				if (whichSensor==1) {
-					robot.rotate(Turn.RIGHT);
-					if(robot.hasStopped())
-						throw new Exception("Robot has stopped");
-					canSeeExit = robot.canSeeThroughTheExitIntoEternity(Direction.LEFT);
-				}
-				if (whichSensor==2) {
-					robot.rotate(Turn.LEFT);
-					if(robot.hasStopped())
-						throw new Exception("Robot has stopped");
-					canSeeExit = robot.canSeeThroughTheExitIntoEternity(Direction.RIGHT);
-				}
-				if (whichSensor==3) {
-					robot.rotate(Turn.RIGHT);
-					if(robot.hasStopped())
-						throw new Exception("Robot has stopped");
-					canSeeExit = robot.canSeeThroughTheExitIntoEternity(Direction.BACKWARD);
-				}
+		while(!switched) {
+			try {
+				canSeeExit = robot.canSeeThroughTheExitIntoEternity(Direction.FORWARD);
+				switched=true;
+				break;
+			}catch (UnsupportedOperationException e) {
+				// TODO: handle exception
+				if(e.getMessage()!=("sensor not operational")) 
+					throw new Exception();
+				e.printStackTrace();
 			}
-			else {
+			//find another sensor that is operational to determine if robot is facing the exit
+			//try switching to right sensor
+			try {
+				robot.rotate(Turn.LEFT);
+				canSeeExit = robot.canSeeThroughTheExitIntoEternity(Direction.RIGHT);
+				switched=true;
+				break;
+			} catch (UnsupportedOperationException e1) {
+				if(e1.getMessage()!=("sensor not operational"))
+					throw new Exception();
+				e1.printStackTrace();
+			}
+			//try switching to right sensor
+			try {
+				robot.rotate(Turn.LEFT);
+				canSeeExit=robot.canSeeThroughTheExitIntoEternity(Direction.BACKWARD);
+				switched=true;
+				break;
+			} catch (UnsupportedOperationException e2) {
+				// TODO: handle exception
+				if(e2.getMessage()!=("sensor not operational"))
+					throw new Exception();
+				e2.printStackTrace();
+			}
+
+			//try switching to back sensor
+			try {
+				robot.rotate(Turn.LEFT);
+				canSeeExit=robot.canSeeThroughTheExitIntoEternity(Direction.BACKWARD);
+				switched=true;
+				break;
+			} catch (UnsupportedOperationException e3) {
+				// TODO: handle exception
+				if(e3.getMessage()!=("sensor not operational"))
+					throw new Exception();
+				e3.printStackTrace();
+			}
+
+			//sleep a second before trying forward sensor again
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
 		
-
-	
 		if(robot.hasStopped())
 			throw new Exception("Robot has stopped");
+		
 		CardinalDirection newCD = robot.getCurrentDirection();
 		rotateBack(oldCD, newCD);
 		if(robot.hasStopped())
 			throw new Exception("Robot has stopped");
-		if(!canSeeExit) {
-//			if(robot.hasStopped())
-//				throw new Exception("Robot has stopped");	
+		
+		if(!canSeeExit) {	
 			int[] position = robot.getCurrentPosition(); //current position of robot - should be the exit
 			//robot.rotate(Turn.LEFT);
 			//exit is on south side
@@ -137,7 +157,6 @@ public class WallFollower implements RobotDriver {
 	
 	@Override
 	public boolean drive1Step2Exit() throws Exception {
-		
 		// TODO Auto-generated method stub
 		//Algorithm for a Perfect Maze:
 		 	//If robot is at exit:
@@ -149,104 +168,172 @@ public class WallFollower implements RobotDriver {
 			 	//move forward 1
 			 	//stop
 			//Else:
-		 		//turn right 
-		int steps=0;
+		 		//turn right 	
+		
+		//if robot is at exit, stop
 		if (robot.isAtExit())
 			return false;
+		
+		//keeps track of cardinal direction of robot before switching sensors
 		CardinalDirection oldCD = robot.getCurrentDirection();
 		
-		try {
-			steps = robot.distanceToObstacle(Direction.LEFT);
-		//find another sensor that is operational to find the distance to obstacle in the original direction
-		}catch (Exception e) {
-			// TODO: handle exception
-			if(e instanceof UnsupportedOperationException && e.getMessage()==("sensor not operational")) {				
-				int whichSensor=findOperational();
-				if (whichSensor==0) {
-					robot.rotate(Turn.LEFT);
-					if(robot.hasStopped())
-						throw new Exception("Robot has stopped");
-					steps = robot.distanceToObstacle(Direction.FORWARD);
-				}
-				if (whichSensor==1) {
-					if(robot.hasStopped())
-						throw new Exception("Robot has stopped");
-					steps = robot.distanceToObstacle(Direction.LEFT);
-				}
-				if (whichSensor==2) {
-					robot.rotate(Turn.AROUND);
-					if(robot.hasStopped())
-						throw new Exception("Robot has stopped");
-					steps = robot.distanceToObstacle(Direction.RIGHT);
-				}
-				if (whichSensor==3) {
-					robot.rotate(Turn.RIGHT);
-					if(robot.hasStopped())
-						throw new Exception("Robot has stopped");
-					steps = robot.distanceToObstacle(Direction.BACKWARD);
-				}
+		//sets to an impossible step value so that one can tell if steps has been changed by calling distance to obstacle
+		int steps=-1;
+		while(steps==-1) {
+			try {
+				steps = robot.distanceToObstacle(Direction.LEFT);
+				break;
+				//find another sensor that is operational to find the distance to obstacle in the original direction
+			}catch (UnsupportedOperationException e) {
+				// TODO: handle exception
+				if(e.getMessage()!=("sensor not operational")) 
+					throw new Exception();
+				e.printStackTrace();
+			}
+			
+			//try switching to forward sensor
+			try {
+				robot.rotate(Turn.LEFT);
+				steps = robot.distanceToObstacle(Direction.FORWARD);
+				break;
+			} catch (UnsupportedOperationException e1) {
+				if(e1.getMessage()!=("sensor not operational"))
+					throw new Exception();
+				e1.printStackTrace();
+			}
+			
+			//try switching to right sensor
+			try {
+				robot.rotate(Turn.LEFT);
+				steps=robot.distanceToObstacle(Direction.RIGHT);
+				break;
+			} catch (UnsupportedOperationException e2) {
+					// TODO: handle exception
+				if(e2.getMessage()!=("sensor not operational"))
+					throw new Exception();
+				e2.printStackTrace();
+			}
+			
+			//try switching to back sensor
+			try {
+				robot.rotate(Turn.LEFT);
+				steps=robot.distanceToObstacle(Direction.BACKWARD);
+				break;
+			} catch (UnsupportedOperationException e3) {
+				// TODO: handle exception
+				if(e3.getMessage()!=("sensor not operational"))
+					throw new Exception();
+				e3.printStackTrace();
+			}
+			
+			//sleep a second before trying forward sensor again
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
 		}
 		if(robot.hasStopped())
 			throw new Exception("Robot has stopped");
+		
+		//current direction of robot
 		CardinalDirection newCD = robot.getCurrentDirection();
+		//turn back to the cardinal direction before sensors were switched
 		rotateBack(oldCD, newCD);
 		if(robot.hasStopped())
 			throw new Exception("Robot has stopped");
+		
+		//If there is no left wall:
+	 	//rotate left and move forward 1
+	 	//stop
 		if (steps>0) {
-		robot.rotate(Turn.LEFT);
-		if(robot.hasStopped())
-			throw new Exception("Robot has stopped");
-		robot.move(1);
-		if(robot.hasStopped())
-			throw new Exception("Robot has stopped");
-		return true;
+			robot.rotate(Turn.LEFT);
+			if(robot.hasStopped())
+				throw new Exception("Robot has stopped");
+
+			robot.move(1);
+			if(robot.hasStopped())
+				throw new Exception("Robot has stopped");
+			return true;
 		}
+		
 		oldCD=robot.getCurrentDirection();
-		try {
-			steps = robot.distanceToObstacle(Direction.FORWARD);
-		//find another sensor that is operational to find the distance to obstacle in the original direction
-		}catch (Exception e) {
-			// TODO: handle exception
-			if(e instanceof UnsupportedOperationException && e.getMessage()==("sensor not operational")) {
-				int whichSensor=findOperational();
-				if (whichSensor==0) {
-					if(robot.hasStopped())
-						throw new Exception("Robot has stopped");
-					steps = robot.distanceToObstacle(Direction.FORWARD);
-				}
-				if (whichSensor==1) {
-					robot.rotate(Turn.RIGHT);
-					if(robot.hasStopped())
-						throw new Exception("Robot has stopped");
-					steps = robot.distanceToObstacle(Direction.LEFT);
-				}
-				if (whichSensor==2) {
-					robot.rotate(Turn.LEFT);
-					if(robot.hasStopped())
-						throw new Exception("Robot has stopped");
-					steps = robot.distanceToObstacle(Direction.RIGHT);
-				}
-				if (whichSensor==3) {
-					robot.rotate(Turn.AROUND);
-					if(robot.hasStopped())
-						throw new Exception("Robot has stopped");
-					steps = robot.distanceToObstacle(Direction.BACKWARD);
-				}
+		steps=-1;
+		while(steps==-1) {
+			try {
+				steps = robot.distanceToObstacle(Direction.FORWARD);
+				break;
+				//find another sensor that is operational to find the distance to obstacle in the original direction
+			}catch (UnsupportedOperationException e) {
+				// TODO: handle exception
+				if(e.getMessage()!=("sensor not operational"))
+					throw new Exception();
+				e.printStackTrace();
 			}
+			
+			//try right sensor
+			try {
+				robot.rotate(Turn.LEFT);
+				steps = robot.distanceToObstacle(Direction.RIGHT);
+				break;
+			} catch (UnsupportedOperationException e1) {
+				if(e1.getMessage()!=("sensor not operational"))
+					throw new Exception();
+				e1.printStackTrace();
 			}
+			
+			//try switching to back sensor
+			try {
+				robot.rotate(Turn.LEFT);
+				steps=robot.distanceToObstacle(Direction.BACKWARD);
+				break;
+			} catch (UnsupportedOperationException e2) {
+					// TODO: handle exception
+				if(e2.getMessage()!=("sensor not operational"))
+					throw new Exception();
+				e2.printStackTrace();
+			}
+			
+			//try switching to left sensor
+			try {
+				robot.rotate(Turn.LEFT);
+				steps=robot.distanceToObstacle(Direction.LEFT);
+				break;
+			} catch (UnsupportedOperationException e3) {
+				// TODO: handle exception
+				if(e3.getMessage()!=("sensor not operational"))
+					throw new Exception();
+				e3.printStackTrace();
+			}
+			
+			//sleep a second before trying forward sensor again
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 		if(robot.hasStopped())
 			throw new Exception("Robot has stopped");
 		newCD=robot.getCurrentDirection();
+		
+		//rotate back to the original direction before switching sensors
 		rotateBack(oldCD, newCD);
 		if(robot.hasStopped())
 			throw new Exception("Robot has stopped");
+		
+		//If there is no front wall:
+	 	//move forward 1
+	 	//stop
 		if (steps>0) {
 			robot.move(1);
 			if(robot.hasStopped())
 				throw new Exception("Robot has stopped");
 			return true;
 		}
+		//else: turn right
 		else {
 			robot.rotate(Turn.RIGHT);
 			if(robot.hasStopped())
@@ -254,47 +341,6 @@ public class WallFollower implements RobotDriver {
 		}
 		return false;
 	
-	}
-	
-	private int findOperational() {
-		// TODO Auto-generated method stub
-		UnreliableRobot testrobot = (UnreliableRobot)robot;
-		if (testrobot.forwardSensor.getOperational())
-			return 0;
-		if (testrobot.leftSensor.getOperational())
-			return 1;
-		if (testrobot.rightSensor.getOperational())
-			return 2;
-		if (testrobot.backwardSensor.getOperational())
-			return 3;
-		return -1;
-		
-	}
-
-	private int findReliable() {
-		// TODO Auto-generated method stub
-		UnreliableRobot robot2 = (UnreliableRobot) this.robot;
-		String parameter = robot2.controller.sensorParameter;
-		reliable=new ArrayList<>();
-		if (parameter.charAt(0)=='1') {
-			reliable.add(0);
-		}
-	    if (parameter.charAt(1)=='1') {
-			reliable.add(1);
-	    	//add left unreliable sensor to unreliable robot	
-	    }
-	    //right sensor is unreliable
-	    if (parameter.charAt(2)=='1') {
-			reliable.add(2);
-	    }
-	    //back sensor is unreliable
-	    if (parameter.charAt(3)=='1') {
-			reliable.add(3);
-	    }
-	    if (reliable.size()>=1) {
-	    	return reliable.get(0);
-	    }
-	    return -1;
 	}
 
 	/**
