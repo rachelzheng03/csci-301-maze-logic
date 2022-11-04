@@ -1,7 +1,5 @@
 package gui;
 
-import static org.junit.jupiter.api.Assertions.assertAll;
-
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.File;
@@ -15,7 +13,6 @@ import generation.*;
 
 import gui.ColorTheme.ColorThemeSelection;
 import gui.Constants.UserInput;
-import gui.Robot.Direction;
 
 /**
  * Class handles the user interaction through the different stages of the game.

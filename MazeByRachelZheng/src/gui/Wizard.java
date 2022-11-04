@@ -64,22 +64,25 @@ public class Wizard implements RobotDriver {
 				if(reliableRobot.hasStopped())
 					throw new Exception("Robot has stopped");	
 				int[] position = reliableRobot.getCurrentPosition(); //current position of robot - should be the exit
-				//reliableRobot.rotate(Turn.LEFT);
 				//exit is on south side
-				if (!maze.isValidPosition(position[0], position[1]+1))	{
+				if (!maze.isValidPosition(position[0], position[1]+1)&&!maze.hasWall(position[0], position[1], CardinalDirection.South)){
+					System.out.println("Exit on south side");
 					turnToSouth(reliableRobot.getCurrentDirection());
 				}
 				//exit is on east side
-				else if (!maze.isValidPosition(position[0]+1, position[1])){
+				else if (!maze.isValidPosition(position[0]+1, position[1])&&!maze.hasWall(position[0], position[1], CardinalDirection.East)){
+					System.out.println("Exit on east side");
 					turnToEast(reliableRobot.getCurrentDirection());
 				}
 				//exit is on west side
 
-				else if (!maze.isValidPosition(position[0]-1, position[1])){
+				else if (!maze.isValidPosition(position[0]-1, position[1])&&!maze.hasWall(position[0], position[1], CardinalDirection.West)){
+					System.out.println("Exit on west side");
 					turnToWest(reliableRobot.getCurrentDirection());
 				}
 				//exit is on north side
-				else if (!maze.isValidPosition(position[0], position[1]-1)){
+				else if (!maze.isValidPosition(position[0], position[1]-1)&&!maze.hasWall(position[0], position[1], CardinalDirection.North)){
+					System.out.println("Exit on north side");
 					turnToNorth(reliableRobot.getCurrentDirection());
 				}
 				if(reliableRobot.hasStopped())

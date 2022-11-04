@@ -261,9 +261,8 @@ public class StatePlaying implements State {
         		// else: dry-run without graphics, most likely for testing purposes
         		printWarning();
         	}
-       // 	assert(control.getRobot().getBatteryLevel()==3500);
         	try {
-				if(control.getDriver().drive2Exit())
+				if(control.getDriver().drive2Exit()) 
 					control.getRobot().move(1);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block

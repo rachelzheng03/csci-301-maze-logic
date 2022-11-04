@@ -3,13 +3,6 @@
  */
 package gui;
 
-import static org.junit.jupiter.api.Assertions.assertAll;
-
-import generation.CardinalDirection;
-import gui.UnreliableSensor;
-import generation.Maze;
-import gui.Robot.Direction;
-
 /**
  * Responsibilities:
  * 1)Rotate, move, jump
@@ -26,14 +19,6 @@ public class UnreliableRobot extends ReliableRobot{
 	
 	public UnreliableRobot(String parameter) {
 		// TODO Auto-generated constructor stub
-//		forwardSensor=new ReliableSensor();
-//		backwardSensor=new ReliableSensor();
-//		leftSensor=new ReliableSensor();
-//		rightSensor=new ReliableSensor();
-//		hasStopped=false;
-//		controller=null;
-//		odometer=0;
-//		batteryLevel=3500;
 		super();
 		
 		//change sensors to unreliable sensors if applicable:

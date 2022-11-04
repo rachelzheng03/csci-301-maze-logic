@@ -3,8 +3,6 @@
  */
 package gui;
 
-import static org.junit.Assert.assertTrue;
-
 import generation.CardinalDirection;
 
 /**
@@ -23,7 +21,7 @@ public class UnreliableSensor extends ReliableSensor implements Runnable {
 	private boolean operational; //is true if the sensor is in an operational state. is false if sensor is in a failed state
 	private int meanTimeBetweenFailures;
 	private int meanTimeToRepair;
-	protected Thread operationalState;
+	private Thread operationalState;
 	private boolean startedFRP; // is true if startFailureAndRepairProcess has been called. is false otherwise
 	
 	public UnreliableSensor() {
@@ -79,13 +77,24 @@ public class UnreliableSensor extends ReliableSensor implements Runnable {
 		if(!startedFRP)
 			throw new UnsupportedOperationException("Failure and repair process has not been started. There is nothing to stop.");
 		//stop thread
-		System.out.println("start stop" + mountedDirection);
+		System.out.println("start stop " + mountedDirection);
 		operationalState.interrupt();
 	}
 	
-	
+	/**
+	 * Returns true if the robot is operational and false if not
+	 */
 	public boolean getOperational() {
 		return operational;
 	}
+	
+	/**
+	 * For TESTING purposes. Sets operational field for the sensor
+	 * @param operational
+	 */
+	public void setOperational(boolean operational) {
+		this.operational=operational;
+	}
+	
 
 }
