@@ -178,13 +178,6 @@ public class StatePlaying implements State {
         // set the current position and direction consistently with the viewing direction
         setPositionDirectionViewingDirection();
 
-//        if (panel != null) {
-//        	startDrawer();
-//        }
-//        else {
-//        	// else: dry-run without graphics, most likely for testing purposes
-//        	printWarning();
-//        }
         if (control.getRobot()!=null&&control.getDriver()!=null) {
         	control.getRobot().setController(control);
 
@@ -269,6 +262,17 @@ public class StatePlaying implements State {
 				e.printStackTrace();
 				switchFromPlayingToWinning(control.getDriver().getPathLength(), false);
 			}
+
+           
+            }
+        else {
+        	if (panel != null) {
+        		startDrawer();
+        	}
+        	else {
+        		// else: dry-run without graphics, most likely for testing purposes
+        		printWarning();
+        	}
         }
     }
   
