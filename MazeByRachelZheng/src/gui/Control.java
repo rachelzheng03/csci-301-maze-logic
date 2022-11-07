@@ -317,51 +317,11 @@ public class Control extends JFrame implements KeyListener {
 	    if (sensorParameter==null) {
 	    	ReliableRobot reliableRobot=new ReliableRobot();
 			setRobotAndDriver(reliableRobot, driver);
+			sensorParameter="1111";
 	    }
 	  
 	    
 	}
-	
-//	/**
-//	 * Handles the parameter corresponding to what type of sensors (unreliable or reliable) the robot has (-r)
-//	 * @param parameter
-//	 */
-//	protected void handleReliableOrUnreliableParameter(String parameter) {
-		// TODO Auto-generated method stub
-//		System.out.println(parameter);
-//		String msg = "Handling command line input: " + parameter; // message for feedback
-//		//set robot to unreliable robot. this method should only be called when at least 1 sensor is unreliable
-//		
-//		//forward sensor is unreliable
-//	    if (parameter.charAt(0)=='0') {
-//	    	UnreliableSensor frontUnreliableSensor = new UnreliableSensor();
-//	    	//add front unreliable sensor to unreliable robot
-//	    	getRobot().addDistanceSensor(frontUnreliableSensor, Direction.FORWARD);
-//	    }
-////	    else {
-////			ReliableSensor frontReliableSensor=new ReliableSensor()
-////		}
-//	    //left sensor is unreliable
-//	    if (parameter.charAt(1)=='0') {
-//	    	UnreliableSensor leftUnreliableSensor = new UnreliableSensor();
-//	    	//add left unreliable sensor to unreliable robot
-//	    	getRobot().addDistanceSensor(leftUnreliableSensor, Direction.LEFT);
-//	    	
-//	    }
-//	    //right sensor is unreliable
-//	    if (parameter.charAt(2)=='0') {
-//	    	UnreliableSensor rightUnreliableSensor = new UnreliableSensor();
-//	    	//add right unreliable sensor to unreliable robot
-//	    	getRobot().addDistanceSensor(rightUnreliableSensor, Direction.RIGHT);
-//	    }
-//	    //back sensor is unreliable
-//	    if (parameter.charAt(3)=='0') {
-//	    	UnreliableSensor backUnreliableSensor = new UnreliableSensor();
-//	    	//add back unreliable sensor to unreliable robot
-//	    	getRobot().addDistanceSensor(backUnreliableSensor, Direction.BACKWARD);
-//	    }
-//	    LOGGER.fine(msg);	
-	//}
 	
 	/**
 	 * Handles the parameter related to the driver of the maze (-d)

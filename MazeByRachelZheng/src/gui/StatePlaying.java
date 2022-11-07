@@ -326,20 +326,21 @@ public class StatePlaying implements State {
         
         LOGGER.fine("Control switches from playing to winning screen, game completed.");
         
-        
-        Robot robot = control.getRobot();
-        //stop forward sensor if unreliable
-        if (control.sensorParameter.charAt(0)=='0')
-        	robot.stopFailureAndRepairProcess(Direction.FORWARD);
-        //stop left sensor if unreliable
-        if (control.sensorParameter.charAt(1)=='0')
-        	robot.stopFailureAndRepairProcess(Direction.LEFT);
-        //stop right sensor if unreliable
-        if (control.sensorParameter.charAt(2)=='0')
-            robot.stopFailureAndRepairProcess(Direction.RIGHT);
-        //stop backward sensor if unreliable
-        if (control.sensorParameter.charAt(3)=='0')
-            robot.stopFailureAndRepairProcess(Direction.BACKWARD);
+        if (control.getRobot()!=null){
+        	Robot robot = control.getRobot();
+        	//stop forward sensor if unreliable
+        	if (control.sensorParameter.charAt(0)=='0')
+        		robot.stopFailureAndRepairProcess(Direction.FORWARD);
+        	//stop left sensor if unreliable
+        	if (control.sensorParameter.charAt(1)=='0')
+        		robot.stopFailureAndRepairProcess(Direction.LEFT);
+        	//stop right sensor if unreliable
+        	if (control.sensorParameter.charAt(2)=='0')
+        		robot.stopFailureAndRepairProcess(Direction.RIGHT);
+        	//stop backward sensor if unreliable
+        	if (control.sensorParameter.charAt(3)=='0')
+        		robot.stopFailureAndRepairProcess(Direction.BACKWARD);
+        }
         
         // update the context class with the new state
         // and hand over control to the new state

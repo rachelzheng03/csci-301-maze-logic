@@ -156,6 +156,8 @@ class WallFollowerTest {
 	
 	@Test
 	public void testDrive2ExitWithUnreliableRobot() throws Exception {
+		//tests that method works with failure and repair process of sensors
+		
 		//check that robot is at exit
 		//check that robot is facing exit
 		//check odometer
@@ -184,7 +186,6 @@ class WallFollowerTest {
 		//start from various positions and direction and call drive1step2exitmethod
 		//check that position and direction after method is called is correct
 		//check odometer
-		//check battery
 		wallfollower.setRobot(robotReliable);
 		wallfollower.drive1Step2Exit();
 		assertEquals(1, robotReliable.getCurrentPosition()[0]);
@@ -215,10 +216,8 @@ class WallFollowerTest {
 	
 	@Test
 	public void testDrive1Step2ExitWithUneliableRobot() throws Exception {
-		//start from various positions and direction and call drive1step2exitmethod
 		//check that position and direction after method is called is correct
 		//check odometer
-		//check battery
 		wallfollower.setRobot(robotUnreliable);
 		robotUnreliable.startFailureAndRepairProcess(Direction.FORWARD, 4, 2);
 		robotUnreliable.startFailureAndRepairProcess(Direction.LEFT, 4, 2);
@@ -247,7 +246,6 @@ class WallFollowerTest {
 		assertEquals(157, wallfollower.getEnergyConsumption());
 	}
 	
-	
 	@Test
 	public void testGetPathLengthWithReliableRobot() throws Exception {
 		//test method after various steps to exit
@@ -268,7 +266,7 @@ class WallFollowerTest {
 	
 	@Test
 	public void testGetPathLengthWithUnreliableRobot() throws Exception {
-		//test method after various steps to exit
+		//test method after various steps to exit with unreliable sensors
 		wallfollower.setRobot(robotUnreliable);
 		robotUnreliable.startFailureAndRepairProcess(Direction.FORWARD, 4, 2);
 		robotUnreliable.startFailureAndRepairProcess(Direction.LEFT, 4, 2);

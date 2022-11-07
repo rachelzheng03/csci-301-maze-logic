@@ -3,8 +3,6 @@
  */
 package gui;
 
-import static org.junit.jupiter.api.Assertions.assertAll;
-
 import generation.CardinalDirection;
 import gui.Constants.UserInput;
 

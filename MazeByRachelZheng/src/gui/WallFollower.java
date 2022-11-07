@@ -37,7 +37,6 @@ public class WallFollower implements RobotDriver {
 		// TODO Auto-generated method stub
 		this.robot=r;
 		startBattery=robot.getBatteryLevel();
-	//	assert(startBattery==3500);
 	}
 
 	@Override
