@@ -54,11 +54,11 @@ public class ReliableSensor implements DistanceSensor {
 		//if sensor not operational, throw SensorFailure 
 		
 		//if power is less than 0, throw IllegalArgumentException
-		if(currentPower<0)
-			throw new IllegalArgumentException();
+//		if(currentPower<0)
+//			throw new IllegalArgumentException();
 		
 		//if power at 0 or less, throw PowerFailure
-		if (currentPower==0)
+		if (currentPower<=0)
 			throw new Error("Power Failure: power supply is insufficient for the operation");
 		
 		//count how many steps it takes to get to a wall in the direction of the sensor relative to the robot

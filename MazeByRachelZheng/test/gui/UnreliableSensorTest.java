@@ -20,13 +20,6 @@ import gui.Robot.Direction;
  */
 class UnreliableSensorTest extends ReliableSensorTest{
 
-//	private UnreliableSensor forwardSensor;
-//	private UnreliableSensor backwardSensor;
-//	private UnreliableSensor leftSensor;
-//	private UnreliableSensor rightSensor;
-//	private DefaultOrder order;
-//	private MazeFactory factory;
-//	private Maze maze;
 	/**
 	 * @throws java.lang.Exception
 	 */
@@ -110,5 +103,6 @@ class UnreliableSensorTest extends ReliableSensorTest{
 		assertTrue(forwardSensor.getOperational());
 		
 	}
+
 
 }

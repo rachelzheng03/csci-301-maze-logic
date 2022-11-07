@@ -23,12 +23,12 @@ import gui.Robot.Turn;
  */
 class ReliableRobotTest {
 
-	private ReliableRobot robot;
-	private Control controller;
-	private StatePlaying playingState;
-	private DefaultOrder order;
-	private MazeFactory factory;
-	private Maze maze;
+	protected ReliableRobot robot;
+	protected Control controller;
+	protected StatePlaying playingState;
+	protected DefaultOrder order;
+	protected MazeFactory factory;
+	protected Maze maze;
 	/**
 	 * @throws java.lang.Exception
 	 */
@@ -56,7 +56,7 @@ class ReliableRobotTest {
 	 * Tests that objects created in setUp are not null and set up correctly
 	 */
 	@Test
-	public void testReliableRobot() {
+	public void testSetUpWorks() {
 		assertNotNull(order);
 		assertNotNull(factory);
 		assertNotNull(maze);
@@ -706,9 +706,9 @@ class ReliableRobotTest {
 			robot.rotate(Turn.RIGHT); //cd:east
 			robot.distanceToObstacle(Direction.FORWARD);
 			fail("should result in power failure error");
-		} catch (Error e) {
+		} catch (Error|Exception e) {
 			// TODO: handle exception
-			assertTrue(e.getMessage()=="Power Failure: power supply is insufficient for the operation");
+			assertTrue(robot.hasStopped);
 
 		}
 		

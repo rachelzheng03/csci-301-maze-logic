@@ -58,8 +58,8 @@ public class UnreliableRobot extends ReliableRobot{
 		case RIGHT:
 			rightSensor.startFailureAndRepairProcess(meanTimeBetweenFailures, meanTimeToRepair);
 			break;
-		default:
-			throw new IllegalArgumentException("Unexpected value: " + direction);
+//		default:
+//			throw new IllegalArgumentException("Unexpected value: " + direction);
 		}
 	}
 
@@ -79,8 +79,8 @@ public class UnreliableRobot extends ReliableRobot{
 		case RIGHT:
 			rightSensor.stopFailureAndRepairProcess();
 			break;
-		default:
-			throw new IllegalArgumentException("Unexpected value: " + direction);
+//		default:
+//			throw new IllegalArgumentException("Unexpected value: " + direction);
 		}
 	}
 

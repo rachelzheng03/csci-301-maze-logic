@@ -327,58 +327,78 @@ public class ReliableRobot implements Robot {
 		float[] powersupply = {batteryLevel};
 		switch (direction)	{	
 		case FORWARD: 
+			if (forwardSensor==null)
+				throw new UnsupportedOperationException("sensor is null");
 			try {
 				int steps = forwardSensor.distanceToObstacle(getCurrentPosition(), getCurrentDirection(), powersupply);
 				batteryLevel=batteryLevel-1;
 				return steps;
 			} catch (Error|Exception e) {
 				// TODO Auto-generated catch block
+				e.printStackTrace();
 				if(e.getMessage()=="Sensor Failure: sensor not operational" && forwardSensor!=null)
 					throw new UnsupportedOperationException("sensor not operational");
 				if(e.getMessage()=="Power Failure: power supply is insufficient for the operation") {
 					hasStopped=true;
 				}
-				//e.printStackTrace();
 			}
 			break;
 		case BACKWARD:
+			if (backwardSensor==null)
+				throw new UnsupportedOperationException("sensor is null");
 			try {
 				int steps = backwardSensor.distanceToObstacle(getCurrentPosition(), getCurrentDirection(), powersupply);
 				batteryLevel=batteryLevel-1;
 				return steps;
 			} catch (Error|Exception e) {
 				// TODO Auto-generated catch block
+				e.printStackTrace();
 				if(e.getMessage()=="Sensor Failure: sensor not operational" && backwardSensor!=null)
 					throw new UnsupportedOperationException("sensor not operational");
-				e.printStackTrace();
+				if(e.getMessage()=="Power Failure: power supply is insufficient for the operation") {
+					hasStopped=true;
+				}
 			}
 			break;
 		case LEFT:
+			if (leftSensor==null)
+				throw new UnsupportedOperationException("sensor is null");
 			try {
 				int steps = leftSensor.distanceToObstacle(getCurrentPosition(), getCurrentDirection(), powersupply);
 				batteryLevel=batteryLevel-1;
 				return steps;
 			} catch (Error|Exception e) {
 				// TODO Auto-generated catch block
+				e.printStackTrace();
 				if(e.getMessage()=="Sensor Failure: sensor not operational" && leftSensor!=null)
 					throw new UnsupportedOperationException("sensor not operational");
-				e.printStackTrace();
+				if(e.getMessage()=="Power Failure: power supply is insufficient for the operation") {
+					hasStopped=true;
+				}
 			}
 			break;
 		case RIGHT:
+			if (rightSensor==null)
+				throw new UnsupportedOperationException("sensor is null");
 			try {
 				int steps = rightSensor.distanceToObstacle(getCurrentPosition(), getCurrentDirection(), powersupply);
 				batteryLevel=batteryLevel-1;
 				return steps;			
 				} catch (Error|Exception e) {
 				// TODO Auto-generated catch block
+					e.printStackTrace();
 					if(e.getMessage()=="Sensor Failure: sensor not operational" && rightSensor!=null)
 						throw new UnsupportedOperationException("sensor not operational");
-				e.printStackTrace();
+					if(e.getMessage()=="Power Failure: power supply is insufficient for the operation") {
+						hasStopped=true;
+					}
 			}
 			break;
+		default:
+			throw new IllegalArgumentException("Unexpected value: " + direction);
 		}
 		throw new UnsupportedOperationException();
+		
 	}
 
 	@Override
@@ -389,52 +409,60 @@ public class ReliableRobot implements Robot {
 		float[] powersupply = {batteryLevel};
 		switch (direction)	{	
 		case FORWARD: 
+			if (forwardSensor==null)
+				throw new UnsupportedOperationException("sensor is null");
 			try {
 				if (forwardSensor.distanceToObstacle(getCurrentPosition(), getCurrentDirection(), powersupply)==Integer.MAX_VALUE)
 					batteryLevel-=1;
 				return forwardSensor.distanceToObstacle(getCurrentPosition(), getCurrentDirection(), powersupply)==Integer.MAX_VALUE;
 			} catch (Error|Exception e) {
 				// TODO Auto-generated catch block
-				if(e.getMessage()=="Sensor Failure: sensor not operational" && forwardSensor!=null)
+				if(e.getMessage()=="Sensor Failure: sensor not operational")
 					throw new UnsupportedOperationException("sensor not operational");
 				else {
 					e.printStackTrace();
 				}			}
 			break;
 		case BACKWARD:
+			if (backwardSensor==null)
+				throw new UnsupportedOperationException("sensor is null");
 			try {
 				if (backwardSensor.distanceToObstacle(getCurrentPosition(), getCurrentDirection(), powersupply)==Integer.MAX_VALUE)
 					batteryLevel-=1;
 				return backwardSensor.distanceToObstacle(getCurrentPosition(), getCurrentDirection(), powersupply)==Integer.MAX_VALUE;
 			} catch (Error|Exception e) {
 				// TODO Auto-generated catch block
-				if(e.getMessage()=="Sensor Failure: sensor not operational" && backwardSensor!=null)
+				if(e.getMessage()=="Sensor Failure: sensor not operational")
 					throw new UnsupportedOperationException("sensor not operational");
 				else {
 					e.printStackTrace();
 				}			}
 			break;
 		case LEFT:
+			if (leftSensor==null)
+				throw new UnsupportedOperationException("sensor is null");
 			try {
 				if (leftSensor.distanceToObstacle(getCurrentPosition(), getCurrentDirection(), powersupply)==Integer.MAX_VALUE)
 					batteryLevel-=1;
 				return leftSensor.distanceToObstacle(getCurrentPosition(), getCurrentDirection(), powersupply)==Integer.MAX_VALUE;
 			} catch (Error|Exception e) {
 				// TODO Auto-generated catch block
-				if(e.getMessage()=="Sensor Failure: sensor not operational" && leftSensor!=null)
+				if(e.getMessage()=="Sensor Failure: sensor not operational")
 					throw new UnsupportedOperationException("sensor not operational");
 				else {
 					e.printStackTrace();
 				}			}
 			break;
 		case RIGHT:
+			if (rightSensor==null)
+				throw new UnsupportedOperationException("sensor is null");
 			try {
 				if (rightSensor.distanceToObstacle(getCurrentPosition(), getCurrentDirection(), powersupply)==Integer.MAX_VALUE)
 					batteryLevel-=1;
 				return rightSensor.distanceToObstacle(getCurrentPosition(), getCurrentDirection(), powersupply)==Integer.MAX_VALUE;
 			} catch (Error|Exception e) {
 				// TODO Auto-generated catch block
-				if(e.getMessage()=="Sensor Failure: sensor not operational" && rightSensor!=null)
+				if(e.getMessage()=="Sensor Failure: sensor not operational")
 					throw new UnsupportedOperationException("sensor not operational");
 				else {
 					e.printStackTrace();
