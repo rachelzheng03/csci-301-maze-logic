@@ -2,9 +2,6 @@ package gui;
 
 import gui.Constants.UserInput;
 import gui.Robot.Direction;
-
-import static org.junit.jupiter.api.Assertions.assertAll;
-
 import java.util.ArrayList;
 import java.util.logging.Logger;
 
@@ -254,7 +251,7 @@ public class StatePlaying implements State {
         		// else: dry-run without graphics, most likely for testing purposes
         		printWarning();
         	}
-        	try {
+        	try {		
 				if(control.getDriver().drive2Exit()) 
 					control.getRobot().move(1);
 			} catch (Exception e) {

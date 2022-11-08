@@ -342,6 +342,11 @@ public class Control extends JFrame implements KeyListener {
 	    	RobotDriver driver2 = new WallFollower();
 	    	setRobotAndDriver(robot, driver2);
 	        break;
+	    case "SmartWizard":
+	    	RobotDriver driver3 = new SmartWizard();
+	    	setRobotAndDriver(robot, driver3);
+	    	msg = "Command line input detected: robot driver set to SmartWizard object";
+	        break;
 	    case "Manual":
 	    	msg = "Command line input detected: no driver, robot manually controlled";
 	        break;
