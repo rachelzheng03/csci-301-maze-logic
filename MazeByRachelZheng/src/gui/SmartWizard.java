@@ -45,7 +45,6 @@ public class SmartWizard extends Wizard implements RobotDriver {
 //		deduct energy costs
 //		repeat until robot is facing the exit
 		while (!robot.isAtExit()) {
-			System.out.println("running");
 			drive1Step2Exit();
 		}
 		drive1Step2Exit();
@@ -57,7 +56,6 @@ public class SmartWizard extends Wizard implements RobotDriver {
 		if (robot.isAtExit()) {
 			return super.drive1Step2Exit();
 		}
-		System.out.println("not at exit");
 
 		int[] position=robot.getCurrentPosition();
 		int[] destination = maze.getNeighborCloserToExit(position[0], position[1]);
@@ -65,7 +63,7 @@ public class SmartWizard extends Wizard implements RobotDriver {
 		ArrayList<int[]> neighborCandidates=new ArrayList<>();
 		ArrayList<CardinalDirection> dirCandidates=new ArrayList<>();
 		//check if east neighbor is in the maze
-		if(maze.isValidPosition(position[0]+1, position[1])) {
+		if(maze.isValidPosition(position[0]+1, position[1])) {			
 			int[] position1= {position[0]+1, position[1]};
 			neighborCandidates.add(position1);
 			dirCandidates.add(CardinalDirection.East);
@@ -78,13 +76,13 @@ public class SmartWizard extends Wizard implements RobotDriver {
 		}
 		//check if south neighbor is in the maze
 		if(maze.isValidPosition(position[0], position[1]+1)) {
-			int[] position1= {position[0]-1, position[1]};
+			int[] position1= {position[0], position[1]+1};
 			neighborCandidates.add(position1);
 			dirCandidates.add(CardinalDirection.South);
 		}
 		//check if north neighbor is in the maze
 		if(maze.isValidPosition(position[0], position[1]-1)) {
-			int[] position1= {position[0]-1, position[1]};
+			int[] position1= {position[0], position[1]-1};
 			neighborCandidates.add(position1);
 			dirCandidates.add(CardinalDirection.North);
 		}
@@ -101,10 +99,8 @@ public class SmartWizard extends Wizard implements RobotDriver {
 		//if the closest neighbor is separated by a wall, determine if it's more energy efficient to jump across the wall
 		if (maze.hasWall(position[0], position[1], tempDirection)){
 			int distanceDifference=mazeDist.getDistanceValue(position[0], position[1])- mazeDist.getDistanceValue(tempShortNeighbor[0], tempShortNeighbor[1]);
-			System.out.println(distanceDifference);
 			//6(steps)+3*(0.5*steps) [6 battery for each move forward and 3 battery for each rotation, amount of rotations estimated to be half the amount of steps]
 			if(40<(7.5*distanceDifference)) {
-				System.out.println("small enough");
 				//turn to face neighbor
 				switch (tempDirection) {
 				case North: 
@@ -133,8 +129,6 @@ public class SmartWizard extends Wizard implements RobotDriver {
 		}
 		//no difference between closest neighbor regardless of walls: do what wizard does
 		else {
-			System.out.println("othercase");
-
 			super.drive1Step2Exit();
 		}
 		return robot.getCurrentPosition()==tempShortNeighbor;

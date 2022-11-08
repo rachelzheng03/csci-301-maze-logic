@@ -21,13 +21,13 @@ import gui.Robot.Turn;
  */
 class WizardTest {
 
-	private Wizard wizard;
-	private DefaultOrder order;
-	private MazeFactory factory;
-	private Maze maze;
-	private ReliableRobot robot;
-	private Control controller;
-	private StatePlaying playingState;
+	protected Wizard wizard;
+	protected DefaultOrder order;
+	protected MazeFactory factory;
+	protected Maze maze;
+	protected ReliableRobot robot;
+	protected Control controller;
+	protected StatePlaying playingState;
 
 	@BeforeEach
 	public void setUp(){
