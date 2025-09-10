@@ -267,42 +267,7 @@ public class MazeBuilder implements Runnable {
 			}
 		}
 	}
-	/* original, kept  for discussion in class !!!!
-	protected void generatePathways() {
-		int[][] origdirs = new int[width][height] ; 
-		int x = random.nextIntWithinInterval(0, width-1) ;
-		int y = 0; 
-		final int firstx = x ; 
-		final int firsty = y ;
-		int dir = 0; 	 	
-		int origdir = dir; 	
-		cells.setCellAsVisited(x, y); 
-		while (true) { 		
-			int dx = Constants.DIRS_X[dir];
-			int dy = Constants.DIRS_Y[dir];
-			if (!cells.canGo(x, y, dx, dy)) { 
-				dir = (dir+1) & 3; 
-				if (origdir == dir) { 
-					if (x == firstx && y == firsty)
-						break; 
-					int odr = origdirs[x][y];
-					dx = Constants.DIRS_X[odr];
-					dy = Constants.DIRS_Y[odr];
-					x -= dx;
-					y -= dy;
-					origdir = dir = random.nextIntWithinInterval(0, 3);
-				}
-			} else {
-				cells.deleteWall(x, y, dx, dy);
-				x += dx;
-				y += dy;
-				cells.setCellAsVisited(x, y);
-				origdirs[x][y] = dir;
-				origdir = dir = random.nextIntWithinInterval(0, 3);
-			}
-		}
-	}
-	*/
+	
 	/**
 	 * Provides the sign of a given integer number
 	 * @param num is the integer whose sign value is determined

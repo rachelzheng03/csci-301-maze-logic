@@ -280,7 +280,8 @@ public class ColorTheme {
 		    double g = weightFstColor * fstColor.getGreen() + (1-weightFstColor) * sndColor.getGreen();
 		    double b = weightFstColor * fstColor.getBlue() + (1-weightFstColor) * sndColor.getBlue();
 		    double a = Math.max(fstColor.getAlpha(), sndColor.getAlpha());
-
+		    
+		    System.out.print("r: "+r+"g: "+g +"b: "+b+"a: "+a);
 		    return new Color((int) r, (int) g, (int) b, (int) a);
 		  }
 		/**
@@ -301,7 +302,10 @@ public class ColorTheme {
 	    	final int d = distance / 4;
 	        // mod used to limit the number of colors to 6
 	        final int rgbValue = calculateRGBValue(d, extensionX);
-	        //System.out.println("Initcolor rgb: " + rgbValue);
+	        System.out.println("Initcolor rgb: " + rgbValue);
+	        System.out.println("getWallColor thing: "+((d >> 3) ^ cc) % 6);
+	        System.out.println("RGB_DEF "+RGB_DEF);
+
 	        switch (((d >> 3) ^ cc) % 6) {
 	        case 0:
 	            result = new Color(rgbValue, RGB_DEF, RGB_DEF);

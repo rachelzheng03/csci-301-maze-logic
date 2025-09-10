@@ -23,7 +23,7 @@ public class FloorplanTest{
 	private int height = 4;
 	private Floorplan floorplan;  // setup makes this a width x height cells object
 	private Floorplan floorplan1; // setup makes this a 1x1 cells object 
-	
+
 	/**
 	 * We create a default (width x height) floorplan object that is not initialized and a (1x1) floorplan1 object.
 	 */
