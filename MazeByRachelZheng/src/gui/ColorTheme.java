@@ -302,9 +302,9 @@ public class ColorTheme {
 	    	final int d = distance / 4;
 	        // mod used to limit the number of colors to 6
 	        final int rgbValue = calculateRGBValue(d, extensionX);
-	        System.out.println("Initcolor rgb: " + rgbValue);
-	        System.out.println("getWallColor thing: "+((d >> 3) ^ cc) % 6);
-	        System.out.println("RGB_DEF "+RGB_DEF);
+	        //System.out.println("Initcolor rgb: " + rgbValue);
+	        //System.out.println("getWallColor thing: "+((d >> 3) ^ cc) % 6);
+	        //System.out.println("RGB_DEF "+RGB_DEF);
 
 	        switch (((d >> 3) ^ cc) % 6) {
 	        case 0:
