@@ -1,5 +1,7 @@
 package generation;
 
+import static org.junit.jupiter.api.Assertions.assertAll;
+
 /**
  * This class has the responsibility to provide the distance
  * for each cell to the exit of a maze.
@@ -164,6 +166,8 @@ public class Distance {
 		exitPosition = getPositionWithMaxDistanceOnBorder();
 		// Step 2: compute distances with regards to the exit position
 		computeDists(cells, exitPosition[0], exitPosition[1]);
+		//System.out.println("final infinity count");
+		assert(countInfinity()==0) : "num infinities: " + countInfinity();
 		return exitPosition ;
 	}
 
@@ -345,10 +349,9 @@ public class Distance {
 			progress = toDoCounter - countInfinity();
 			toDoCounter -= progress; // update to current value
 		} while (0 < progress);
-		//if (0 < countInfinity())
-		//	System.out.println("Distance: ERROR: All positions should have a finite distance to the exit, counted: " + countInfinity() );
-		assert (0 == countInfinity()) : 
-			"All positions should have a finite distance to the exit";
+		
+//		assert (0 == countInfinity()) : 
+//			"All positions should have a finite distance to the exit";
 		// the computation is not good enough to have truly minimum values
 		saturateDistances(cells);
 	}
@@ -389,6 +392,7 @@ public class Distance {
 	 * @return the number of cells with an infinite distance to the exit
 	 */
 	private int countInfinity() {
+		//System.out.println("in countInfinity");
 		int result = 0;
 		for (int x = 0; x < width; x++) {
 			for (int y = 0; y < height; y++) {
@@ -396,6 +400,7 @@ public class Distance {
 					result++;
 			}
 		}
+		//System.out.println(result);
 		return result;
 	}
 	/**

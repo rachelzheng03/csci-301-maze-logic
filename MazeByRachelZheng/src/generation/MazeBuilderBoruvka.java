@@ -53,7 +53,9 @@ public class MazeBuilderBoruvka extends MazeBuilder implements Runnable {
             	}else {
             		dest = calculateCellNum(cur_edge.getY()+1, cur_edge.getX(), width);
             	}
-           
+            	
+            	if (parent[src] == -1 | parent[dest] == -1) continue; 
+            	
                 int set1 = find(parent, src);
                 int set2 = find(parent, dest);
 
@@ -97,10 +99,17 @@ public class MazeBuilderBoruvka extends MazeBuilder implements Runnable {
 	
 	// Find with path compression
     int find(int[] parent, int i) {
-        if (parent[i] != i) {
-            parent[i] = find(parent, parent[i]);
-        }
-        return parent[i];
+    	try {
+    		if (parent[i] != i) {
+                parent[i] = find(parent, parent[i]);
+            }
+            return parent[i];
+		} catch (Exception e) {
+			System.out.println(i);
+			System.out.println(Arrays.toString(parent));
+			throw e;
+		}
+        
     }
 
     // Union by rank
@@ -128,7 +137,7 @@ public class MazeBuilderBoruvka extends MazeBuilder implements Runnable {
 			break;
 		}
 		case West: {
-			seed = (2*calculateCellNum(y, x, width+1)) + 1;
+			seed = 2*calculateCellNum(y, x, width+1) + 1;
 			break;
 		}
 		case South: {
@@ -136,7 +145,7 @@ public class MazeBuilderBoruvka extends MazeBuilder implements Runnable {
 			break;
 		}
 		case East: {
-			seed = (2*calculateCellNum(y, x+1, width+1)) + 1;
+			seed = 2*calculateCellNum(y, x+1, width+1) + 1;
 			break;
 		}
 		default:
@@ -149,7 +158,7 @@ public class MazeBuilderBoruvka extends MazeBuilder implements Runnable {
 		}
 		
 		Random random = new Random(seed); 
-		return random.nextInt(Integer.MAX_VALUE);
+		return random.nextInt(100);
 	}
 	
 	private ArrayList<Wallboard> initBoruvka(int[] parent, int[] rank) {

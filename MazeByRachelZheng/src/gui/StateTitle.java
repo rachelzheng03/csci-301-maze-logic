@@ -121,7 +121,7 @@ public class StateTitle implements State {
     	// Using the same value in repeated rounds of
     	// the game allows for playing the exact same
     	// maze again.
-    	seed = 86422; //13; // default
+    	seed = 13; // default
     }
     /**
      * Sets the filename.

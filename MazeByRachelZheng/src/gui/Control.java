@@ -54,7 +54,7 @@ public class Control extends JFrame implements KeyListener {
 	// for production version it is desirable that we never play the same maze 
 	// so even if the algorithm and skill level are the same, the generated maze should look different
 	// which is achieved with some random initialization
-	private static final boolean DEVELOPMENT_VERSION_WITH_DETERMINISTIC_MAZE_GENERATION = true;
+	private static final boolean DEVELOPMENT_VERSION_WITH_DETERMINISTIC_MAZE_GENERATION = false;
 	// rooms are an additional feature that generalizes the text book maze generation algorithms
 	// for development it can be useful to turn of the room generation to focus on the standard algorithm
 	private static final boolean DEVELOPMENT_VERSION_MAZE_GENERATION_WITHOUT_ROOMS = false;

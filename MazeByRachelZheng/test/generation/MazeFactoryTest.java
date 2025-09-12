@@ -39,7 +39,6 @@ public class MazeFactoryTest {
 		factory.order(order3);
 		factory.waitTillDelivered();
 		maze3 = order3.getMaze();
-
 	}
 	
 	/**
@@ -47,6 +46,7 @@ public class MazeFactoryTest {
 	 */
 	@Test
 	public void testMazeFactory() {
+		System.out.println("in base class test");
 		assertNotNull(factory);
 		assertNotNull(order);
 		assertNotNull(order2);
@@ -62,6 +62,7 @@ public class MazeFactoryTest {
 	 */
 	@Test
 	public void testMazeSize() {
+		System.out.println("in base class test");
 		assertEquals(4, maze.getWidth());
 		assertEquals(4, maze.getHeight());
 		assertEquals(12, maze2.getWidth());
@@ -95,13 +96,13 @@ public class MazeFactoryTest {
 			}
 		}
 		//check every border wall on the left and determine if it is an exit
-		for(int h=0; h<height; h++) {
+		for(int h=1; h<height-1; h++) {
 			if(floorplan.isExitPosition(0, h)) {
 				westexit=westexit+1;
 			}
 		}
 		//check every border wall on the right and determine if it is an exit
-		for(int h1=0; h1<height; h1++) {
+		for(int h1=1; h1<height-1; h1++) {
 			if(floorplan.isExitPosition(width-1, h1)) {
 				eastexit=eastexit+1;
 			}
@@ -213,8 +214,6 @@ public class MazeFactoryTest {
 		cells = maze3.getHeight()*maze3.getWidth();
 		assertEquals(maxWalls-(cells-1), walls);
 	}
-	
-
 
 }
 
